@@ -108,7 +108,7 @@ EOT;
             $this->output->writeln(sprintf(
                 $tmpl,
                 $code, $element->getTitle(), $element->getElement('description'),
-                $element->getElement('description'), $element->getElement('enabled', false)
+                $element->getElement('enabled', false)
             ));
         }
     }
