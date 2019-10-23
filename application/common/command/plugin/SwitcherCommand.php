@@ -108,7 +108,7 @@ EOT;
             $this->output->writeln(sprintf(
                 $tmpl,
                 $code, $element->getTitle(), $element->getElement('description'),
-                $element->getElement('enabled', false) ? '已安装' : '未安装',
+                $element->getElement('enabled', false) ? '已安装' : '未安装'
             ));
         }
     }
