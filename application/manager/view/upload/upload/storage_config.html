@@ -1,0 +1,58 @@
+<!--
+  ~ Copyright (c) 2018-2019.
+  ~  This file is part of the moonpie production
+  ~  (c) johnzhang <875010341@qq.com>
+  ~  This source file is subject to the MIT license that is bundled
+  ~  with this source code in the file LICENSE.
+  -->
+
+{extend name="common/base" /} {block name="page-content-main"}
+<div class="am-u-sm-12">
+  <table
+    width="100%"
+    class="am-table am-table-compact am-table-striped tpl-table-black"
+  >
+    <thead>
+      <tr>
+        <th>引擎机读码</th>
+        <th>标题</th>
+        <th>描述</th>
+        <th>默认引擎</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {volist name="data_provider->getModels()" id="vo" empty="
+      <tr>
+        <td colspan="5" class="am-text-center">暂无记录</td>
+      </tr>
+      "}
+      <tr>
+        <td class="am-text-middle">{$key}</td>
+        <td class="am-text-middle">{$vo.label.title}</td>
+        <td class="am-text-middle">{$vo.label.description}</td>
+        <td class="am-text-middle">{$key == $default_engine ? '是' : '否'}</td>
+        <td class="am-text-middle">
+          <div class="tpl-table-black-operation">
+            <a
+              href="{:url($edit_uri, ['code' => $key])}"
+              class="tpl-table-black-operation-edit"
+            >
+              <i class="am-icon-trash"></i>编辑
+            </a>
+          </div>
+        </td>
+      </tr>
+      {/volist}
+    </tbody>
+  </table>
+</div>
+<div class="am-u-lg-12 am-cf">
+  <div class="am-fr">{$data_provider->getPagination()->render()}</div>
+  <div class="am-fr pagination-total am-margin-right">
+    <div class="am-vertical-align-middle">
+      总记录：{$data_provider->getPagination()->total()}
+    </div>
+  </div>
+</div>
+{/block}

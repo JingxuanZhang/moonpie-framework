@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2018-2019.
+  ~  This file is part of the moonpie production
+  ~  (c) johnzhang <875010341@qq.com>
+  ~  This source file is subject to the MIT license that is bundled
+  ~  with this source code in the file LICENSE.
+  -->
+
+<xsd:schema
+        xmlns="http://moonpie-framework.localhost.com/dic/plugin"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://moonpie-framework.localhost.com/dic/plugin"
+        elementFormDefault="qualified"
+>
+    <xsd:element name="manifest" type="manifest"/>
+    <xsd:element name="category"/>
+    <xsd:element name="namespace"/>
+    <xsd:complexType name="manifest">
+        <xsd:annotation>
+            <xsd:documentation>用来描述插件元数据的信息</xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element type="xsd:string" name="title" minOccurs="1" maxOccurs="1"/>
+            <xsd:element type="xsd:string" name="description" minOccurs="1" maxOccurs="1"/>
+            <xsd:element type="xsd:string" name="version" default="1.0.0" minOccurs="1" maxOccurs="1"/>
+            <xsd:element type="xsd:string" name="code" minOccurs="1" maxOccurs="1"/>
+            <xsd:element type="xsd:string" name="namespace" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="category" minOccurs="1" maxOccurs="1"/>
+            <!-- 路由相关 -->
+            <xsd:element type="routes" name="routes" minOccurs="0" maxOccurs="1"/>
+            <!-- 自定义函数 -->
+            <xsd:element type="helpers" name="helpers" minOccurs="0" maxOccurs="1"/>
+            <!-- 服务提供器 -->
+            <xsd:element type="providers" name="providers" minOccurs="0" maxOccurs="1"/>
+            <!-- 数据迁移 -->
+            <xsd:element type="migrations" name="migrations" minOccurs="0" maxOccurs="1"/>
+            <!-- 行为事件-->
+            <xsd:element type="hooks" name="hooks" minOccurs="0" maxOccurs="1"/>
+            <!-- 自定义命令 -->
+            <xsd:element type="commands" name="commands" minOccurs="0" maxOccurs="1"/>
+            <!-- 模块依赖部分 -->
+            <xsd:element type="depends" name="depends" minOccurs="0" maxOccurs="1"/>
+            <!-- 前端资源部分 -->
+            <xsd:element type="assets" name="assets" minOccurs="0" maxOccurs="1"/>
+            <!-- 配置相关 -->
+            <xsd:element type="configs" name="configs" minOccurs="0" maxOccurs="1"/>
+        </xsd:choice>
+    </xsd:complexType>
+    <!--定义配置相关 -->
+    <xsd:complexType name="configs">
+        <xsd:annotation>
+            <xsd:documentation>定义配置相关信息集合</xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="config" type="elementConfig" maxOccurs="unbounded"/>
+        </xsd:choice>
+    </xsd:complexType>
+    <!--定义路由相关 -->
+    <xsd:complexType name="routes">
+        <xsd:annotation>
+            <xsd:documentation>定义路由规则信息集合</xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="route" type="elementFileImport" maxOccurs="unbounded"/>
+        </xsd:choice>
+    </xsd:complexType>
+    <!--定义自定义函数 -->
+    <xsd:complexType name="helpers">
+        <xsd:annotation><xsd:documentation>定义自定义函数相关的声明</xsd:documentation></xsd:annotation>
+        <xsd:choice>
+            <xsd:element maxOccurs="unbounded" name="helper" type="elementFileImport"/>
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- 定义服务提供器 -->
+    <xsd:complexType name="providers">
+        <xsd:annotation><xsd:documentation>定义服务定位器部分</xsd:documentation></xsd:annotation>
+        <xsd:choice>
+            <xsd:element maxOccurs="unbounded" name="provider" type="elementFileImport"/>
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- 定义迁移 -->
+    <xsd:complexType name="migrations">
+        <xsd:annotation><xsd:documentation>定义数据迁移相关信息</xsd:documentation></xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="migration" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:choice>
+                        <xsd:element name="item" maxOccurs="unbounded"/>
+                    </xsd:choice>
+                    <xsd:attribute name="version" use="required">
+                        <xsd:annotation><xsd:documentation>定义迁移版本号</xsd:documentation></xsd:annotation>
+                    </xsd:attribute>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- 定义钩子 -->
+    <xsd:complexType name="hooks">
+        <xsd:annotation><xsd:documentation>定义钩子事件</xsd:documentation></xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="hook" maxOccurs="unbounded">
+                <xsd:annotation><xsd:documentation>定义具体的钩子</xsd:documentation></xsd:annotation>
+                <xsd:complexType>
+                    <xsd:attribute name="tag" use="required">
+                        <xsd:annotation><xsd:documentation>关联的事件名称</xsd:documentation></xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="class" use="required">
+                        <xsd:annotation><xsd:documentation>使用的行为类</xsd:documentation></xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="method" use="optional" default="run">
+                        <xsd:annotation><xsd:documentation>使用的行为方法</xsd:documentation></xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="priority" default="0" use="optional">
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:integer">
+                                <xsd:minInclusive value="-127"/>
+                                <xsd:maxInclusive value="127"/>
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:attribute>
+                </xsd:complexType>
+            </xsd:element>
+
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- 定义命令行 -->
+    <xsd:complexType name="commands">
+        <xsd:annotation><xsd:documentation>定义自定义命令</xsd:documentation></xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="command" maxOccurs="unbounded">
+                <xsd:annotation><xsd:documentation>定义具体的命令类名</xsd:documentation></xsd:annotation>
+            </xsd:element>
+
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- 定义模块依赖 -->
+    <xsd:complexType name="depends">
+        <xsd:annotation><xsd:documentation>定义模块依赖信息</xsd:documentation></xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="depend" maxOccurs="unbounded">
+                <xsd:annotation><xsd:documentation>定义具体的依赖信息</xsd:documentation></xsd:annotation>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="module"/>
+                        <xsd:element name="version"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- 定义前端资源相关 -->
+    <xsd:complexType name="assets">
+        <xsd:annotation><xsd:documentation>定义前端资源相关的声明信息</xsd:documentation></xsd:annotation>
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="asset">
+                <xsd:annotation><xsd:documentation>定义前端资源</xsd:documentation></xsd:annotation>
+                <xsd:complexType>
+                    <xsd:attribute name="type" use="required">
+                        <xsd:annotation><xsd:documentation>定义资源类型</xsd:documentation></xsd:annotation>
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                                <xsd:enumeration value="javascript"/>
+                                <xsd:enumeration value="stylesheet"/>
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:attribute>
+                    <xsd:attribute name="entry" use="required" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:documentation>定义资源名称</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="src" use="required">
+                        <xsd:annotation><xsd:documentation>定义资源位置</xsd:documentation></xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="shared" type="xsd:boolean"/>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="copy_file">
+                <xsd:annotation><xsd:documentation>复制前端资源的规则</xsd:documentation></xsd:annotation>
+                <xsd:complexType>
+                    <xsd:attribute name="from" use="required"/>
+                    <xsd:attribute name="to" use="optional"/>
+                    <xsd:attribute name="pattern" use="optional"/>
+                    <xsd:attribute name="context" use="optional"/>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- 定义通用信息部分 -->
+    <xsd:attributeGroup name="elementTarget">
+        <xsd:attribute name="name" use="required">
+            <xsd:annotation><xsd:documentation>信息标识</xsd:documentation></xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="target" use="required">
+            <xsd:annotation><xsd:documentation>目标文件位置</xsd:documentation></xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+    <xsd:complexType name="elementFileImport">
+        <xsd:attributeGroup ref="elementTarget"/>
+    </xsd:complexType>
+    <xsd:complexType name="elementConfig">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="name" />
+                <xsd:attribute name="range" />
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+</xsd:schema>

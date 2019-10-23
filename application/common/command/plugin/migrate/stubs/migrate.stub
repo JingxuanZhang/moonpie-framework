@@ -1,0 +1,21 @@
+<?php
+
+use think\migration\Migrator;
+use think\migration\db\Column;
+
+class $className extends Migrator
+{
+    /**
+     * 执行数据
+     */
+    public function up()
+    {
+
+    }
+    /**
+     * 回滚处理
+     */
+    public function down()
+    {
+    }
+}

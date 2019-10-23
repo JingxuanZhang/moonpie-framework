@@ -1,0 +1,152 @@
+{extend name="common/base"}
+{block name="page-content-main"}
+<!--
+  ~ Copyright (c) 2018-2019.
+  ~ This file is part of the moonpie production
+  ~ (c) johnzhang <875010341@qq.com>
+  ~ This source file is subject to the MIT license that is bundled
+  ~ with this source code in the file LICENSE.
+  -->
+
+<form id="my-form" class="am-form tpl-form-line-form" method="post">
+    <div class="widget-body">
+        <fieldset>
+            <div class="widget-head am-cf">
+                <div class="widget-title am-fl">基本信息</div>
+            </div>
+            <div class="goods-spec-single">
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">规则标题</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <input type="text" class="tpl-form-input" name="rule[title]" value="{$rule.title}"/>
+                    </div>
+                </div>
+
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">适用角色</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        {if condition="$is_edit eq false"}
+                        <select name="rule[role_id]" class="choose-item" data-placeholder="适用角色" data-query-url="{$query_role_url}">
+                        {else /}
+                        <select name="rule[role_id]" disabled="disabled">
+                        {/if}
+                            {if condition="!empty($role)"}
+                            <option value="{$role.id}" selected="selected">{$role.title}</option>
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">权限列表</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <select name="rule[privileges][]" id="choose-privileges" multiple="multiple">
+                            {volist name="rule.privileges" id="priv"}
+                            <option value="{$priv}" selected="selected">{$priv}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">使用机读码</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <label class="am-radio-inline">
+                            <input type="radio" name="rule[use_code]" value="0"{if condition="$rule->getData('use_code') eq 0"}checked="checked"{/if} />不使用
+                        </label>
+                        <label class="am-radio-inline">
+                            <input type="radio" name="rule[use_code]" value="1"{if condition="$rule->getData('use_code') eq 1"}checked="checked"{/if}  />使用
+                        </label>
+                    </div>
+
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">授权与否</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <label class="am-radio-inline">
+                            <input type="radio" name="rule[granted]" value="0"{if condition="$rule->getData('granted') eq 0"}checked="checked"{/if} />否
+                        </label>
+                        <label class="am-radio-inline">
+                            <input type="radio" name="rule[granted]" value="1"{if condition="$rule->getData('granted') eq 1"}checked="checked"{/if}  />是
+                        </label>
+                    </div>
+
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">适用资源</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        {if condition="$is_edit eq false"}
+                        <select name="rule[resource_id]" class="choose-item" data-placeholder="适用资源" data-query-url="{$query_res_url}">
+                        {else /}
+                        <select name="rule[resource_id]" disabled="disabled">
+                        {/if}
+                            {if condition="!empty($resource)"}
+                            <option value="{$resource.id}" selected="selected">{$resource.title}</option>
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">使用断言</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <select name="rule[assertion]" class="choose-item" data-placeholder="使用断言" data-query-url="{$query_assertion_url}">
+                        </select>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="am-form-group">
+                <div class="am-u-sm-9 am-u-sm-push-3 am-margin-top-lg">
+                    <button type="submit" class="j-submit am-btn am-btn-secondary">提交</button>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+{/block}
+{block name="js-run"}
+<script>
+    $(function () {
+        $('#my-form').superFrameForm();
+        $('.choose-item').each(function(){
+            var $this = $(this);
+            var query_url = $this.data('query-url');
+            var title = $this.data('placeholder');
+            $this.select2({
+                placeholder: title,
+                minimumInputLength: 2,
+                allowClear: true,
+                ajax: {
+                    url: query_url,
+                    type: 'post',
+                    delay: 300,
+                    data: function (params) {
+                        var query = {
+                            page: params.page || 1,
+                            keyword: params.term,
+                        };
+                        return query;
+                    },
+                    processResults: function(ret, params) {
+                        var rtn = {};
+                        rtn.results = $.map(ret.data, function (item) {
+                            return {id: item.id, text: item.title};
+                        });
+                        return rtn;
+                    } ,
+                    dataType: 'json'
+                }
+            });
+        });
+        $('#choose-privileges').select2({tags: true, placeholder: '权限列表'});
+    });
+</script>
+{/block}
+{block name="js-base"}
+{__block__}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+{/block}
+{block name="stylesheets"}
+{__block__}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
+{/block}

@@ -1,0 +1,98 @@
+{extend name="common/base"}
+{block name="page-content-main"}
+<form id="my-form" class="am-form tpl-form-line-form" method="post">
+    <div class="widget-body">
+        <fieldset>
+            <div class="widget-head am-cf">
+                <div class="widget-title am-fl">基本信息</div>
+            </div>
+            <div class="am-form-group">
+                <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">角色机读码</label>
+                <div class="am-u-sm-9 am-u-end">
+                    {if condition="$need_code"}
+                    <input type="text" class="tpl-form-input" name="role[code]" value="{$role.code}" required />
+                    {else /}
+                    <input type="text" class="tpl-form-input" readonly value="{$role.code}" required />
+                    {/if}
+                </div>
+            </div>
+
+            <div class="goods-spec-single">
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">角色标题</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <input type="text" class="tpl-form-input" name="role[title]" value="{$role.title}" />
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">角色描述</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <input type="text" class="tpl-form-input" name="role[description]" value="{$role.description}"/>
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">继承角色</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <select name="role[parents][]" multiple="multiple" id="choose-parents">
+                            {if condition="!empty($parents)"}
+                            {volist name="parents" id="prt"}
+                            <option value="{$prt.id}" selected="selected">{$prt.title}</option>
+                            {/volist}
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="am-form-group">
+                <div class="am-u-sm-9 am-u-sm-push-3 am-margin-top-lg">
+                    <button type="submit" class="j-submit am-btn am-btn-secondary">提交</button>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+{/block}
+{block name="js-run"}
+<script>
+    $(function(){
+        $('#my-form').superFrameForm();
+        $('#choose-parents').select2({
+            placeholder: '继承的角色',
+            minimumInputLength: 2,
+            allowClear: true,
+            ajax: {
+                url: '{:url("backend.authorize_query_role")}',
+                type: 'post',
+                delay: 300,
+                data: function(params){
+                    var query = {
+                        page: params.page || 1,
+                        keyword: params.term,
+                    };
+                    {if condition="isset($role['id'])"}
+                    query.except_id = {$role.id};
+                    {/if}
+                        return query;
+                },
+                processResults: function(ret, params) {
+                    var rtn = {};
+                    rtn.results = $.map(ret.data, function(item){
+                        return {id: item.id, text: item.title};
+                    });
+                    return rtn;
+                },
+                dataType: 'json'
+            }
+        });
+    });
+</script>
+{/block}
+{block name="js-base"}
+{__block__}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+{/block}
+{block name="stylesheets"}
+{__block__}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+{/block}

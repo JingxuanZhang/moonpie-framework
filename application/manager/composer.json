@@ -1,0 +1,7 @@
+{
+  "suggest": {
+    "aliyuncs/oss-sdk-php": "If you want to use Aliyun OSS System to store medias, Please install the component.",
+    "qiniu/php-sdk": "If you want to use Qiniu OSS System to store medias, Please install this component.",
+    "qcloud/cos-sdk-v5": "If you want to use Tencent Oss System to store medias, Please install this component."
+  }
+}

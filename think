@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+use app\common\service\App;
+use app\common\service\Console;
+
+// +----------------------------------------------------------------------
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Author: yunwuxin <448901948@qq.com>
+// +----------------------------------------------------------------------
+
+// 定义项目路径
+define('APP_PATH', __DIR__ . '/application/');
+
+// 加载框架引导文件
+require __DIR__.'/thinkphp/base.php';
+App::initCommon();
+$console = Console::init(false);
+$console->getPluginManager()->importPluginConfig('command');
+$params = compact('console');
+\think\Hook::listen('console_init', $params);
+$console->run();

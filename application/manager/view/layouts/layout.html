@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>{$pageTitle|default="邻里云后台"}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="icon" type="image/png" href="/static/assets/common/i/favicon.ico"/>
+    <meta name="apple-mobile-web-app-title" content="{$pageTitle|default='邻里云后台'}"/>
+    <link rel="stylesheet" href="/static/assets/common/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="/static/assets/store/css/app.css"/>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_783249_3sbba6jrt9y.css">
+    <script src="/static/assets/common/js/jquery.min.js"></script>
+    <script src="//at.alicdn.com/t/font_783249_e5yrsf08rap.js"></script>
+    <script>
+        BASE_URL = '{$base_url|default=""}';
+        STORE_URL = '{$store_url|default="/manager"}';
+    </script>
+</head>
+
+<body data-type="">
+<div class="am-g tpl-g">
+    {include file="common/header" /}
+    {include file="common/menu" /}
+
+
+    <!-- 内容区域 start -->
+    <div class="tpl-content-wrapper <?= empty($second) ? 'no-sidebar-second' : '' ?>">
+        {__CONTENT__}
+    </div>
+    <!-- 内容区域 end -->
+
+</div>
+<script src="/static/assets/common/plugins/layer/layer.js"></script>
+<script src="/static/assets/common/js/jquery.form.min.js"></script>
+<script src="/static/assets/common/js/amazeui.min.js"></script>
+<script src="/static/assets/common/js/webuploader.html5only.js"></script>
+<script src="/static/assets/common/js/art-template.js"></script>
+<script src="/static/assets/store/js/app.js?v={$version}"></script>
+<script src="/static/assets/store/js/file.library.js?v={$version}"></script>
+</body>
+
+</html>

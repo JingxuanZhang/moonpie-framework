@@ -1,0 +1,40 @@
+<!--
+  ~ Copyright (c) 2018-2019.
+  ~  This file is part of the moonpie production
+  ~  (c) johnzhang <875010341@qq.com>
+  ~  This source file is subject to the MIT license that is bundled
+  ~  with this source code in the file LICENSE.
+  -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    {assign name="default_page_title" value="$Think.config.site.name" /}
+    {assign name="default_page_title_suffix" value="$Think.config.site.name" /}
+    {block name="page-title"}<title>{$page_title|default="$default_page_title"}-{$page_title_suffix|default="$default_page_title_suffix"}</title>{/block}
+    {block name="seo-meta"}
+    <meta name="title" content="{$Think.config.site.name}" />
+    <meta content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui" name="viewport">
+    <!--允许苹果浏览器全屏浏览-->
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <!--指定的iphone中safari顶端的状态条的样式-->
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <!--设备忽略将页面中的数字识别为电话号码-->
+    <meta content="telephone=no" name="format-detection">
+    <!--去除Android平台中对邮箱地址的识别-->
+    <meta content="email=no" name="format-detection" />
+    <!--解决iOS 4.3版本中safari对页面中5位数字的自动识别和自动添加样式-->
+    <meta name="format-detection" content="telephone=no" />
+    {/block}
+    {block name="seo-tongji"} {/block}
+    {block name="stylesheets"} {/block}
+    {block name="styles"}{/block}
+</head>
+<body{if condition="isset($body_classes) && is_array($body_classes)"} class="{$body_classes|implode=' ', ###}"{/if}>
+{block name="page-main"} {/block}
+{block name="page-footer"} {/block}
+</body>
+{block name="js-base"} {/block}
+{block name="js-run"} {/block}
+</html>

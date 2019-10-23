@@ -1,0 +1,68 @@
+{extend name="common/base"}
+{block name="stylesheets"}
+{__block__}
+{encore:asset id="static/bundle/manage/css/login.css" /}
+{/block}
+{block name="page-body"}
+<!--
+  ~ Copyright (c) 2018-2019.
+  ~  This file is part of the moonpie production
+  ~  (c) johnzhang <875010341@qq.com>
+  ~  This source file is subject to the MIT license that is bundled
+  ~  with this source code in the file LICENSE.
+  -->
+
+<body class="page-login-v3">
+<div class="container">
+    <div id="wrapper" class="login-body">
+        <div class="login-content">
+            <div class="brand">
+                <!-- <img alt="logo" class="brand-img" src=""> -->
+                <h2 class="brand-text">{$Think.config.site.name}</h2>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <input class="" name="admin[username]" placeholder="请输入用户名" type="text" required>
+                </div>
+                <div class="form-group">
+                    <input class="" name="admin[password]" placeholder="请输入密码" type="password" required>
+                </div>
+                <div class="form-group">
+                    <button id="btn-submit" type="submit">
+                        登录
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+{/block}
+{block name="js-run"}
+<script>
+    $(function () {
+        // 表单提交
+        var $form = $('#login-form');
+        $form.submit(function () {
+            var $btn_submit = $('#btn-submit');
+            $btn_submit.attr("disabled", true);
+            $form.ajaxSubmit({
+                type: "post",
+                dataType: "json",
+                // url: '',
+                success: function (result) {
+                    $btn_submit.attr('disabled', false);
+                    if (result.code === 1) {
+                        layer.msg(result.msg, {time: 1500, anim: 1}, function () {
+                            window.location = result.url;
+                        });
+                        return true;
+                    }
+                    layer.msg(result.msg, {time: 1500, anim: 6});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+{/block}

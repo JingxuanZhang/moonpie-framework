@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2018-2019.
+  ~  This file is part of the moonpie production
+  ~  (c) johnzhang <875010341@qq.com>
+  ~  This source file is subject to the MIT license that is bundled
+  ~  with this source code in the file LICENSE.
+  -->
+
+<manifest xmlns="http://moonpie-framework.localhost.com/dic/plugin">
+    <title>系统统一后台</title>
+    <version>1.0.0</version>
+    <code>manager</code>
+    <description>简单实现一个基于AmazeUI的后台</description>
+    <category>后台管理</category>
+    <commands>
+        <command>app\manager\command\AdminPrepareCommand</command>
+    </commands>
+    <routes>
+        <route name="main" target="route.php"/>
+    </routes>
+    <providers>
+        <provider name="basic_provider" target="app\manager\service\provider\ManagerProvider"/>
+    </providers>
+</manifest>

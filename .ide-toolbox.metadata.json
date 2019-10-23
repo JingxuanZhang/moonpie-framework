@@ -1,0 +1,55 @@
+{
+  "providers": [
+    {
+      "name": "wxreader",
+      "items": [
+        {
+          "lookup_string": "lock.factory",
+          "icon": "com.jetbrains.php.PhpIcons.INTERFACE",
+          "type": "app\\common\\service\\lock\\LockFactoryInterface",
+          "type_text": "app\\common\\service\\lock\\LockFactoryInterface"
+        },
+        {
+          "lookup_string": "authorize.acl_res_registry",
+          "icon": "com.jetbrains.php.PhpIcons.CLASS",
+          "type": "app\\common\\service\\security\\ResourceRegistry",
+          "type_text": "app\\common\\service\\security\\ResourceRegistry"
+        },
+        {
+          "lookup_string": "authorize",
+          "icon": "com.jetbrains.php.PhpIcons.CLASS",
+          "type": "app\\common\\service\\security\\AclManager",
+          "type_text": "app\\common\\service\\security\\AclManager"
+        }
+      ]
+    }
+  ],
+  "registrar": [
+    {
+      "provider": "wxreader",
+      "language": "php",
+      "signatures": [
+        {
+          "function": "app",
+          "index": 0,
+          "type": "default"
+        },
+        {
+          "class": "app\\common\\service\\ServiceContainer",
+          "method": "offsetGet",
+          "type": "type"
+        },
+        {
+          "class": "app\\common\\service\\ServiceContainer",
+          "method": "offsetGet",
+          "type": "default"
+        },
+        {
+          "class": "Pimple\\Psr11\\Container",
+          "method": "get",
+          "type": "default"
+        }
+      ]
+    }
+  ]
+}

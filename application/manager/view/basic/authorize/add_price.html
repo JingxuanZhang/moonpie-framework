@@ -1,0 +1,130 @@
+{extend name="common/base"}
+{block name="page-content-main"}
+<form id="my-form" class="am-form tpl-form-line-form" method="post">
+    <div class="widget-body">
+        <fieldset>
+            <div class="widget-head am-cf">
+                <div class="widget-title am-fl">基本信息</div>
+            </div>
+
+            <div class="goods-spec-single">
+
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">来源角色</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        {if condition="$need_code eq true"}
+                        <select name="rule[from_role]" id="choose-source" class="select-for-query-role" data-title="来源角色">
+                            {if condition="!empty($rule->source)"}
+                            <option value="{$rule.source.id}" selected="selected">{$rule.source.title}</option>
+                            {/if}
+                        </select>
+                        {else /}
+                        <select readonly="readonly">
+                            {if condition="!empty($rule->source)"}
+                            <option value="{$rule.source.id}" selected="selected">{$rule.source.title}</option>
+                            {/if}
+                        </select>
+                        {/if}
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">目标角色</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        {if condition="$need_code eq true"}
+                        <select name="rule[to_role]" id="choose-target" class="select-for-query-role" data-title="目标角色">
+                            {if condition="!empty($rule->source)"}
+                            <option value="{$rule.source.id}" selected="selected">{$rule.source.title}</option>
+                            {/if}
+                        </select>
+                        {else /}
+                        <select readonly="readonly">
+                            {if condition="!empty($rule->target)"}
+                            <option value="{$rule.target.id}" selected="selected">{$rule.target.title}</option>
+                            {/if}
+                        </select>
+                        {/if}
+                    </div>
+                </div>
+
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">转化价格</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <input type="number" class="tpl-form-input" name="rule[price]" value="{$rule.price}"/>
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">有效时长</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <input type="text" class="tpl-form-input" name="rule[valid_seconds]" value="{$rule.valid_seconds}" />
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">截止日期</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <input type="datetime-local" class="tpl-form-input" name="rule[deadline]" value="{$rule->deadline->format('Y-m-d\\TH:i:s')}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="am-form-group">
+                <div class="am-u-sm-9 am-u-sm-push-3 am-margin-top-lg">
+                    <button type="submit" class="j-submit am-btn am-btn-secondary">提交</button>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+{/block}
+{block name="js-run"}
+<script>
+    $(function(){
+        $('#my-form').superFrameForm();
+        var except_id;
+        $('.select-for-query-role').each(function(){
+          var $this = $(this);
+          $this.select2({
+            placeholder: $this.data('title'),
+            minimumInputLength: 2,
+            allowClear: true,
+            ajax: {
+                url: '{:url("basic.authorize/query_role")}',
+                type: 'post',
+                delay: 300,
+                data: function(params){
+                    var query = {
+                        page: params.page || 1,
+                        keyword: params.term,
+                    };
+                    if(except_id > 0) {
+                      query.except_id = except_id;
+                    }
+                    return query;
+                },
+                processResults: function(ret, params) {
+                    var rtn = {};
+                    rtn.results = $.map(ret.data, function(item){
+                        return {id: item.id, text: item.title};
+                    });
+                    return rtn;
+                },
+                dataType: 'json'
+            }
+          });
+          $this.on('select2:select', function(e){
+            except_id = e.params.data.id;
+          });
+          $this.on('select2:unselect', function(e){
+            if(except_id > 0) except_id = undefined;
+          });
+        });
+    });
+</script>
+{/block}
+{block name="js-base"}
+{__block__}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+{/block}
+{block name="stylesheets"}
+{__block__}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+{/block}

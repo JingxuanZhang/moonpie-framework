@@ -1,0 +1,72 @@
+<!--
+  ~ Copyright (c) 2018-2019.
+  ~  This file is part of the moonpie production
+  ~  (c) johnzhang <875010341@qq.com>
+  ~  This source file is subject to the MIT license that is bundled
+  ~  with this source code in the file LICENSE.
+  -->
+
+<!-- 侧边导航栏 -->
+<div class="left-sidebar dis-flex">
+    <!-- 一级菜单 -->
+    {volist name="$menus" id="item"}
+    <ul class="sidebar-nav">
+        <li class="sidebar-nav-heading"></li>
+        {assign name="top_menus" value="$item->getSubTree()" /}
+        {volist name="top_menus" id="top_menu"}
+        {if condition="$top_menu->isActiveTrail() eq true and $top_menu->hasChildren()"}
+        {assign name="active_menu" value="$top_menu" /}
+        {/if}
+        <li class="sidebar-nav-link">
+            {assign name="top_proxy_ele" value="$top_menu->getProxyClickableElement()" /}
+            {if condition="$top_proxy_ele neq false"}
+            <a href="{$top_proxy_ele->getUrlObject()->getLink()}"
+           {else /}
+            <a href="javascript:void(0);"
+           {/if}
+               class="{if condition='$top_menu->isActiveTrail()'}active{/if}">
+                {if condition="$top_menu->useSvgIcon() eq true"}
+                <svg class="icon sidebar-nav-link-logo" aria-hidden="true">
+                    <use xlink:href="#{$top_menu->getIcon()}"></use>
+                </svg>
+                {else /}
+                <i class="iconfont sidebar-nav-link-logo {$top_menu->getIcon()}"></i>
+                {/if}
+                {$top_menu->getTitle()}
+            </a>
+        </li>
+        {/volist}
+    </ul>
+    {/volist}
+    {if condition="isset($active_menu)"}
+    {assign name="second_sub_tree" value="$active_menu->getSubTree()" /}
+    <ul class="left-sidebar-second">
+        <li class="sidebar-second-title">{$active_menu->getTitle()}</li>
+        <li class="sidebar-second-item">
+            {volist name="second_sub_tree" id="second_menu"}
+            {if condition="$second_menu->getUrlObject()->hasLink()"}
+            <a href="{$second_menu->getUrlObject()->getLink()}"{if condition="$second_menu->isActiveTrail() eq true"} class="active"{/if}>{$second_menu->getTitle()}</a>
+           {elseif condition="$second_menu->hasChildren()" /}
+            <div class="sidebar-third-item">
+                <a href="javascript:void(0);"
+                   class="sidebar-nav-sub-title{if condition='$second_menu->isActiveTrail() eq true'} active{/if}">
+                    <i class="iconfont icon-caret"></i>
+                    {$second_menu->getTitle()}
+                </a>
+                <ul class="sidebar-third-nav-sub">
+                    {volist name="$second_menu->getSubTree()" id="third_menu"}
+                    <li>
+                        {if condition="$third_menu->getUrlObject()->hasLink()"}
+                        <a class="{if condition='$third_menu->isActiveTrail() eq true'}active{/if}"
+                           href="{$third_menu->getUrlObject()->getLink()}">{$third_menu->getTitle()}</a>
+                        {/if}
+                    </li>
+                    {/volist}
+                </ul>
+            </div>
+            {/if}
+            {/volist}
+        </li>
+    </ul>
+    {/if}
+</div>

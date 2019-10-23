@@ -1,0 +1,78 @@
+<!--
+  ~ Copyright (c) 2018-2019.
+  ~  This file is part of the moonpie production
+  ~  (c) johnzhang <875010341@qq.com>
+  ~  This source file is subject to the MIT license that is bundled
+  ~  with this source code in the file LICENSE.
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    {assign name="default_page_title" value="$Think.config.site.name" /}
+    {assign name="default_page_title_suffix" value="$Think.config.site.name" /}
+    {block name="page-title"}<title>{$page_title|default="$default_page_title"}-{$page_title_suffix|default="$default_page_title_suffix"}</title>{/block}
+    {block name="metadata"}
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="icon" type="image/png" href="/static/assets/common/i/favicon.ico"/>
+    <meta name="apple-mobile-web-app-title" content="{$pageTitle|default='邻里云后台'}"/>
+    {/block}
+    {block name="stylesheets"}
+    {encore:asset id='static/bundle/manage/css/amazeui.min.css' /}
+    {encore:links id='manage/js/app' /}
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_783249_3sbba6jrt9y.css">
+    {/block}
+    {block name="styles"}{/block}
+</head>
+
+{block name="page-body"}
+<body data-type="">
+<div class="am-g tpl-g">
+    {block name="page-header"}
+    {include file="manager@common/header" /}
+    {/block}
+    {block name="page-sidebar"}
+    {include file="manager@common/menu" /}
+    {/block}
+    <!-- 内容区域 start -->
+    <div class="tpl-content-wrapper{if condition='empty($active_menu)'} no-sidebar-second{/if}">
+        <div class="row-content am-cf">
+            <div class="row">
+                <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+                    <div class="widget am-cf">
+                        <div class="widget-head am-cf">
+                            {block name="page-content-header"}<div class="widget-title am-cf">{$page_title}</div>{/block}
+                        </div>
+                        <div class="widget-body am-fr">
+                            {block name="page-content-main"}{/block}
+                        </div>
+                        {block name="page-content-footer"}{/block}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 内容区域 end -->
+    {block name="page-footer"}{/block}
+
+</div>
+
+</body>
+{/block}
+{block name="js-base"}
+{encore:scripts id="manage/js/app" /}
+<script src="//at.alicdn.com/t/font_783249_e5yrsf08rap.js"></script>
+<script>
+    BASE_URL = '{$base_url|default=""}';
+    STORE_URL = '{$store_url|default="/manager"}';
+</script>
+{encore:asset type="js" id="static/bundle/manage/js/amazeui.min.js" /}
+{encore:asset type="js" id="static/bundle/manage/js/webuploader.html5only.js" /}
+{encore:asset type="js" id="static/bundle/manage/js/file.library.js" /}
+{/block}
+{block name="js-run"}{/block}
+</html>

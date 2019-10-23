@@ -1,0 +1,121 @@
+{extend name="common/base"}
+{block name="page-content-main"}
+<!--
+  ~ Copyright (c) 2018-2019.
+  ~ This file is part of the moonpie production
+  ~ (c) johnzhang <875010341@qq.com>
+  ~ This source file is subject to the MIT license that is bundled
+  ~ with this source code in the file LICENSE.
+  -->
+
+<form id="my-form" class="am-form tpl-form-line-form" method="post">
+    <div class="widget-body">
+        <fieldset>
+            <div class="widget-head am-cf">
+                <div class="widget-title am-fl">基本信息</div>
+            </div>
+            <div class="am-form-group">
+                <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">权限资源机读码</label>
+                <div class="am-u-sm-9 am-u-end">
+                    {if condition="$need_code"}
+                    <input type="text" class="tpl-form-input" name="resource[code]" value="{$resource.code}" required/>
+                    {else /}
+                    <input type="text" class="tpl-form-input" readonly value="{$resource.code}" required/>
+                    {/if}
+                </div>
+            </div>
+            <div class="am-form-group">
+                <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">权限资源类</label>
+                <div class="am-u-sm-9 am-u-end">
+                    {if condition="$need_code"}
+                    <select name="resource[resource_id]">
+                        {else /}
+                        <select name="resource[resource_id]" disabled>
+                        {/if}
+                        <option value="">请选择资源类型</option>
+                        {volist name="registry->getResourceClasses()" id="res"}
+                        {if condition="$res['valid']"}
+                        <option require value="{$res.name}"{if condition="$res['name'] eq $default_class"} selected="selected"{/if}>{$res.title}</option>
+                        {/if}
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="goods-spec-single">
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">权限资源标题</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <input type="text" class="tpl-form-input" name="resource[title]" value="{$resource.title}"/>
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label form-require">权限资源描述</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <input type="text" class="tpl-form-input" name="resource[description]"
+                               value="{$resource.description}"/>
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label class="am-u-sm-3 am-u-lg-2 am-form-label">继承资源</label>
+                    <div class="am-u-sm-9 am-u-end">
+                        <select name="resource[pid]" id="choose-parents">
+                            {if condition="!empty($parent)"}
+                            <option value="{$parent.id}" selected="selected">{$parent.title}</option>
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="am-form-group">
+                <div class="am-u-sm-9 am-u-sm-push-3 am-margin-top-lg">
+                    <button type="submit" class="j-submit am-btn am-btn-secondary">提交</button>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+{/block}
+{block name="js-run"}
+<script>
+    $(function () {
+        $('#my-form').superFrameForm();
+        $('#choose-parents').select2({
+            placeholder: '继承的权限资源',
+            minimumInputLength: 2,
+            allowClear: true,
+            ajax: {
+                url: '{:url("backend.authorize_query_res")}',
+                type: 'post',
+                delay: 300,
+                data: function (params) {
+                    var query = {
+                        page: params.page || 1,
+                        keyword: params.term,
+                    };
+                        {if condition="isset($resource['id'])"}
+                            query.except_id = {$resource.id};
+                        {/if}
+                        return query;
+                },
+                processResults: function(ret, params) {
+                    var rtn = {};
+                    rtn.results = $.map(ret.data, function (item) {
+                        return {id: item.id, text: item.title};
+                    });
+                    return rtn;
+                } ,
+                dataType: 'json'
+            }
+        });
+    });
+</script>
+{/block}
+{block name="js-base"}
+{__block__}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+{/block}
+{block name="stylesheets"}
+{__block__}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
+{/block}
