@@ -44,6 +44,7 @@ class PluginManager
         $this->loadEnableCache();
         $this->debug = (bool)$debug;
     }
+
     protected function loadEnableCache()
     {
         $cache_data = Cache::get(static::CACHE_KEY_PLUGIN_ENABLE, []);
@@ -89,9 +90,9 @@ class PluginManager
                     if (!empty($namespace)) {
                         Loader::addNamespace($namespace, $this->plugins[$plugin_code]->getRootPath());
                     }
-                } else if($this->plugins[$plugin_code]->getElement('enabled', false) === false){
+                } else if ($this->plugins[$plugin_code]->getElement('enabled', false) === false) {
                     $this->plugins[$plugin_code]->setElement('enabled', false);
-                }else {
+                } else {
                     //这里添加命名空间
                     $namespace = $this->plugins[$plugin_code]->getNamespace();
                     if (!empty($namespace)) {
@@ -101,7 +102,7 @@ class PluginManager
                 }
             }
             $enable_cache = Cache::get(static::CACHE_KEY_PLUGIN_ENABLE, false);
-            if(false === $enable_cache) Cache::set(static::CACHE_KEY_PLUGIN_ENABLE, $enable_data);
+            if (false === $enable_cache) Cache::set(static::CACHE_KEY_PLUGIN_ENABLE, $enable_data);
             $this->pluginLoaded = true;
         }
     }
@@ -172,10 +173,12 @@ class PluginManager
      * 引入插件的配置信息
      * @param $scope string 配置节点
      * @param string $module 适配的模块
+     * @return array 稍后需要处理的数据
      */
     public function importPluginConfig($scope, $module = '')
     {
         $this->init();
+        $params = [];
         /** @var PluginElement $plugin_element */
         foreach ($this->plugins as $plugin_element) {
             if (!$plugin_element->isEnable()) continue;
@@ -187,19 +190,27 @@ class PluginManager
                         if (Arr::has($config, 'file')) {
                             $file_path = Arr::get($config, 'file');
                             $real_path = $plugin_element->getRootPath() . $file_path;
-                            if(file_exists($real_path)) {
+                            if (file_exists($real_path)) {
                                 $range_name = Arr::get($config, 'range', 'plugin');
                                 $range_name = $range_name == 'default' ? '' : $range_name;
                                 $config_name = Arr::get($config, 'name', '');
                                 if (empty($config_name)) {//如果没有填写，默认是插件自己的配置
                                     $config_name = $plugin_element->getCode();
+                                }else if($config_name == 'global'){
+                                    $config_name = null;//如果是全局配置，那么设为null
                                 } else if ($range_name == 'plugin') {
                                     $config_name = "{$plugin_element->getCode()}.{$config_name}";
                                 }
-                                Config::set($config_name, include $real_path, $range_name);
-                            }else if(App::$debug){
+                                $strategy = Arr::get($config, 'strategy', 'override');
+                                if($strategy == 'override') {
+                                    Config::load($real_path, $config_name, $range_name);
+                                }else {
+                                    $params[] = compact('strategy', 'real_path', 'config_name', 'range_name', 'plugin_element');
+                                }
+                                //Config::set($config_name, include $real_path, $range_name);
+                            } else if (App::$debug) {
                                 throw new \RuntimeException(sprintf('plugin(code: %s) cannot load its config',
-                                $plugin_element->getCode()));
+                                    $plugin_element->getCode()));
                             }
                         }
                     }
@@ -248,6 +259,7 @@ class PluginManager
                     break;
             }
         }
+        return $params;
 
     }
 
@@ -275,11 +287,12 @@ class PluginManager
         $this->addPluginCache($final);
         return $final;
     }
+
     protected function addPluginCache($freshPlugins)
     {
         $cache_data = Cache::get(static::CACHE_KEY_PLUGIN_ELEMENTS, []);
         $cache_enable_data = Cache::get(static::CACHE_KEY_PLUGIN_ENABLE, []);
-        foreach($freshPlugins as $plugin) {
+        foreach ($freshPlugins as $plugin) {
             $plugin->setElement('enabled', true);
             $cache_data[$plugin->getCode()] = $plugin;
             $cache_enable_data[$plugin->getCode()] = $plugin->getVersion();
@@ -298,7 +311,7 @@ class PluginManager
     {
         $cache_data = Cache::get(static::CACHE_KEY_PLUGIN_ELEMENTS, []);
         $cache_enable_data = Cache::get(static::CACHE_KEY_PLUGIN_ENABLE, []);
-        foreach($removePlugins as $plugin) {
+        foreach ($removePlugins as $plugin) {
             $plugin->setElement('enabled', false);
             $cache_data[$plugin->getCode()] = $plugin;
             unset($cache_enable_data[$plugin->getCode()]);
@@ -425,6 +438,7 @@ class PluginManager
                 throw new exception\UnSupportedOperationException($scope, "暂未支持的操作:{$scope}");
         }
     }
+
     public function refreshPluginCache()
     {
         return false !== Cache::rm(static::CACHE_KEY_PLUGIN_ELEMENTS);
@@ -433,16 +447,17 @@ class PluginManager
     public function getPluginByCode($code, $checkValid = true)
     {
         $this->init();
-        if(!isset($this->plugins[$code])) return false;
+        if (!isset($this->plugins[$code])) return false;
         $plugin = $this->plugins[$code];
-        if($checkValid && !$plugin->isEnable()) return false;
+        if ($checkValid && !$plugin->isEnable()) return false;
         return $plugin;
     }
+
     public function getPlugins($checkValid = true)
     {
         $this->init();
-        if($checkValid) {
-            return array_filter($this->plugins, function($plugin){
+        if ($checkValid) {
+            return array_filter($this->plugins, function ($plugin) {
                 return $plugin->isEnable();
             });
         }

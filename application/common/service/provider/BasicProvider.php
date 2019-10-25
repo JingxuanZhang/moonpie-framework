@@ -7,17 +7,9 @@
  *  with this source code in the file LICENSE.
  */
 
-/**
- * Created by Moonpie Studio.
- * User: JohnZhang
- * Date: 2019/4/16
- * Time: 9:16
- */
-
 namespace app\common\service\provider;
 
 
-use app\common\service\routing\Router;
 use app\common\service\security\AclManager;
 use app\common\service\security\AssertionRegistry;
 use app\common\service\security\ResourceRegistry;
@@ -46,16 +38,6 @@ class BasicProvider implements ServiceProviderInterface
             $params = compact($registry);
             Hook::listen('acl_init_assertion_registry', $params);
             return $registry;
-        };
-        //提供路由相关
-        $pimple['routing.router'] = function($c){
-            $router = new Router($c);
-            $tag = 'routing.middleware_register';
-            $services = $c->tagged($tag);
-            foreach($services as $service_id => $attributes) {
-                $c[$service_id]->registerMiddleware($router);
-            }
-            return $router;
         };
     }
 }

@@ -17,9 +17,9 @@ public/uploads
 [Tt]est.php
 test/
 .vscode/
-!application/common/*
+/application/*/*
 !application/extra/*
 !application/manager/*
-application/**/*
+!application/common/*
 public/**/
 

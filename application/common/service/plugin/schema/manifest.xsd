@@ -205,6 +205,30 @@
             <xsd:extension base="xsd:string">
                 <xsd:attribute name="name" />
                 <xsd:attribute name="range" />
+                <xsd:attribute name="strategy" default="override" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>用来声明配置的覆写规则</xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="override">
+                                <xsd:annotation>
+                                    <xsd:documentation>如果需要应用者覆盖配置，请使用此策略</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="merge">
+                                <xsd:annotation>
+                                    <xsd:documentation>如果需要应用者管理配置，并且只是覆写部分数据，请使用此策略</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="outside">
+                                <xsd:annotation>
+                                    <xsd:documentation>如果配置不需要应用者配置，请使用策略用来确保您的插件配置不会被应用者覆盖</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:attribute>
             </xsd:extension>
         </xsd:simpleContent>
     </xsd:complexType>

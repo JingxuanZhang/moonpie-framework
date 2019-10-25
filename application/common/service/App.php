@@ -276,9 +276,12 @@ class App extends Base
             Config::load($filename, 'database');
 
             //这里我们开始加载插件的配置信息
-            /** @var \app\common\service\plugin\PluginManager $plugin_manager */
-            $plugin_manager = \app('plugin.manager');
-            $plugin_manager->importPluginConfig('config', $module);
+            //如果是模块的话不应该再加载了
+            if (empty($module)) {
+                /** @var \app\common\service\plugin\PluginManager $plugin_manager */
+                $plugin_manager = \app('plugin.manager');
+                $params = $plugin_manager->importPluginConfig('config', $module);
+            }
 
             // 读取扩展配置文件
             if (is_dir(CONF_PATH . $module . 'extra')) {
@@ -295,6 +298,11 @@ class App extends Base
             // 加载应用状态配置
             if ($config['app_status']) {
                 Config::load(CONF_PATH . $module . $config['app_status'] . CONF_EXT);
+            }
+            // 这里需要根据合并策略处理配置
+            if(empty($module) && isset($params)) {
+                //ConfigResolver::mergeConfigs($params);
+                app('config.resolver')->mergeConfigs($params);
             }
 
             // 加载行为扩展文件

@@ -11,6 +11,7 @@
 namespace app\common\service;
 
 use app\common\model\Setting;
+use app\common\service\base\ConfigResolver;
 use app\common\service\filesystem\control\DefaultControlEngine;
 use app\common\service\filesystem\FilesystemFactory;
 use app\common\service\filesystem\FilesystemManager;
@@ -22,6 +23,7 @@ use app\common\service\menu\MenuService;
 use app\common\service\plugin\asset\AssetManager;
 use app\common\service\plugin\PluginManager;
 use app\common\service\resolver\ClassResolver;
+use app\common\service\routing\Router;
 use EasyWeChat\Kernel\Support\Collection;
 use Monolog\Logger;
 use Pimple\Container;
@@ -152,6 +154,20 @@ class ServiceContainer extends Container
                 $return->addEngineHandler($tag_service, isset($attributes['priority']) ? $attributes['priority'] : 0);
             }
             return $return;
+        };
+        //基础配置部分
+        $this['config.resolver'] = function($c){
+            return new ConfigResolver();
+        };
+        //提供路由相关
+        $this['routing.router'] = function($c){
+            $router = new Router($c);
+            $tag = 'routing.middleware_register';
+            $services = $c->tagged($tag);
+            foreach($services as $service_id => $attributes) {
+                $c[$service_id]->registerMiddleware($router);
+            }
+            return $router;
         };
     }
     public function createFromDefinition($definition, $arguments = [])
