@@ -18,6 +18,8 @@ public/uploads
 test/
 .vscode/
 /application/*/*
+/application/prod.php
+/application/production.php
 !application/extra/*
 !application/manager/*
 !application/common/*
