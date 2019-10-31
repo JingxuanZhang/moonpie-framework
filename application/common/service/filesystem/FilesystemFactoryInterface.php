@@ -12,7 +12,10 @@ namespace app\common\service\filesystem;
 interface FilesystemFactoryInterface
 {
     /**
-     * @return \League\Filesystem\FilesystemInterface
+     * 根据机读码和配置创建一个文件系统
+     * @param string 文件系统机读码
+     * @param array $config 文件系统配置
+     * @return \League\Flysystem\FilesystemInterface
      */
     public function create($code, array $config);
 }

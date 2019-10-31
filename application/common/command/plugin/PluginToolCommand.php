@@ -46,7 +46,7 @@ class PluginToolCommand extends Command
     protected function handleMenuClear()
     {
         /** @var \app\common\service\menu\MenuService $service */
-        $service = app('menu.service');
+        $service = app('menu.manager');
         $service->reset();
         $this->output->info('clear system menu cache successfully');
     }

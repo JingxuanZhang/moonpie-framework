@@ -34,4 +34,11 @@ interface ControlEngineInterface
      * @return $this
      */
     public function addEngineHandler(EngineHandlerInterface $handler, $priority = 0);
+
+    /**
+     * @param $code string 引擎机读码
+     * @param Request|null $request 请求对象
+     * @return EngineHandlerInterface 匹配请求的接收器
+     */
+    public function getMatchEngineHandler($code, Request $request = null);
 }

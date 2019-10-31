@@ -15,6 +15,7 @@ use app\common\service\filesystem\control\EngineHandlerInterface;
 use app\manager\validate\LocalUploadConfig;
 use EasyWeChat\Kernel\Support\Arr;
 use think\Request;
+use think\View;
 
 class LocalHandler implements EngineHandlerInterface
 {
@@ -66,14 +67,20 @@ class LocalHandler implements EngineHandlerInterface
         return $config;
     }
 
-    public function renderViewForExternal(Request $request)
+    public function renderViewForExternal(Request $request, array $viewConfig)
     {
-        // TODO: Implement renderViewForExternal() method.
+        $default = [
+            'form_field' => 'please define your form field',
+            'id' => 'storage_config_container',
+            'config' => $this->getStorageConfig('local')['setting'],
+        ];
+        $config = array_merge($default, $viewConfig);
+        return View::instance()->fetch(__DIR__ . '/view/local_engine_config.html', $config);
     }
 
     public function handleExternalRequest(Request $request)
     {
-        // TODO: Implement handleExternalRequest() method.
+        return [];
     }
 
 }

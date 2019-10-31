@@ -78,10 +78,28 @@ class FilesystemManager
     {
         return $this->visitManager;
     }
+
+    /**
+     * 根据配置信息实例化文件系统，一般用来为外部提供服务
+     * @param array $config
+     * @return array
+     */
     public function getEngineByConfig(array $config)
     {
         $code = Arr::get($config, 'code', $this->getDefault(false));
         $engine_config = Arr::get($config, 'config', []);
         return $this->getByCode($code, $engine_config, true);
+    }
+    public function getEngineOptions($default_code = '')
+    {
+        $return = [];
+        $default_code = empty($default_code) ? Arr::get($this->configs, 'default', '') : $default_code;
+        foreach(Arr::get($this->configs,'engines', []) as $code => $config) {
+            $return[] = [
+                'title' => Arr::get($config, 'label.title', $code),
+                'code' => $code, 'default' => $default_code == $code
+            ];
+        }
+        return $return;
     }
 }

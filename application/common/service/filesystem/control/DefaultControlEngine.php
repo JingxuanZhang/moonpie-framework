@@ -16,12 +16,18 @@ class DefaultControlEngine extends AbstractControlEngine
 {
     public function handleEngineManage($code, Request $request)
     {
+        $handler = $this->getMatchEngineHandler($code, $request);
+        return $handler->handle($request);
+    }
+
+    public function getMatchEngineHandler($code, Request $request = null)
+    {
         krsort($this->handlers, SORT_NUMERIC);
         foreach ($this->handlers as $priority => $handlers) {
             /**@var EngineHandlerInterface $handler */
             foreach ($handlers as $handler) {
                 if ($handler->support($code)) {
-                    return $handler->handle($request);
+                    return $handler;
                 }
             }
         }

@@ -27,15 +27,17 @@ interface EngineHandlerInterface
     public function handle(Request $request);
 
     /**
+     * 为外部提供接口获取配置相关的视图信息
      * @param Request $request
+     * @param array $viewConfig 视图相关配置
      * @return string
      */
-    public function renderViewForExternal(Request $request);
+    public function renderViewForExternal(Request $request, array $viewConfig);
 
     /**
      * 处理外部请求中的数据请求,完成验证相关
      * @param Request $request
-     * @return array
+     * @return array 返回请求中设置的请求信息,如果系统出现错误抛出一个异常
      */
     public function handleExternalRequest(Request $request);
 }
