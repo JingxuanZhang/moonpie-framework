@@ -33,6 +33,7 @@ class LocalUploadConfig extends BaseValidate
         'default' => ['active', 'setting'],
         'setting' => ['base path', 'permissions'],
         'permissions' => ['file', 'dir'],
+        'only_setting' => ['setting'],
     ];
     protected $currentScene = 'default';
     protected function validSetting($setting, $rule, $data, $field, $title)
@@ -66,5 +67,9 @@ class LocalUploadConfig extends BaseValidate
             return false;
         }
         return true;
+    }
+    public function onlySetting()
+    {
+        return $this->scene('only_setting');
     }
 }

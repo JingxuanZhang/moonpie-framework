@@ -37,7 +37,8 @@ interface EngineHandlerInterface
     /**
      * 处理外部请求中的数据请求,完成验证相关
      * @param Request $request
+     * @param string $formField 请求数据的字段格式类似于config:engine_config.config，因为TP不能获取多级下的请求数据，因此需要这样做
      * @return array 返回请求中设置的请求信息,如果系统出现错误抛出一个异常
      */
-    public function handleExternalRequest(Request $request);
+    public function handleExternalRequest(Request $request, $formField);
 }

@@ -90,10 +90,10 @@ class FilesystemManager
         $engine_config = Arr::get($config, 'config', []);
         return $this->getByCode($code, $engine_config, true);
     }
-    public function getEngineOptions($default_code = '')
+    public function getEngineOptions($defaultCode = '')
     {
         $return = [];
-        $default_code = empty($default_code) ? Arr::get($this->configs, 'default', '') : $default_code;
+        $default_code = empty($defaultCode) ? Arr::get($this->configs, 'default', '') : $defaultCode;
         foreach(Arr::get($this->configs,'engines', []) as $code => $config) {
             $return[] = [
                 'title' => Arr::get($config, 'label.title', $code),

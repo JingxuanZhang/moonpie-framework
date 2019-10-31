@@ -14,6 +14,7 @@ use app\common\model\Setting;
 use app\common\service\filesystem\control\EngineHandlerInterface;
 use app\manager\validate\LocalUploadConfig;
 use EasyWeChat\Kernel\Support\Arr;
+use think\exception\ValidateException;
 use think\Request;
 use think\View;
 
@@ -78,9 +79,20 @@ class LocalHandler implements EngineHandlerInterface
         return View::instance()->fetch(__DIR__ . '/view/local_engine_config.html', $config);
     }
 
-    public function handleExternalRequest(Request $request)
+    public function handleExternalRequest(Request $request, $formField)
     {
-        return [];
+        //处理数据
+        list($field, $scope) = explode(':', $formField);
+        $config = $request->post("{$field}/a", []);
+        $setting = Arr::get($config, $scope, []);
+        //现在验证配置
+        //首先如果是默认引擎的话不能将其切换成非默认
+        $validator = new LocalUploadConfig();
+        $result = $validator->onlySetting()->check(compact('setting'));
+        if (!$result) {
+            throw new ValidateException($validator->getError());
+        }
+        return $setting;
     }
 
 }
