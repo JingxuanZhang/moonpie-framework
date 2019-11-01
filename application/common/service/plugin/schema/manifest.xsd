@@ -45,6 +45,20 @@
             <xsd:element type="assets" name="assets" minOccurs="0" maxOccurs="1"/>
             <!-- 配置相关 -->
             <xsd:element type="configs" name="configs" minOccurs="0" maxOccurs="1"/>
+            <!-- 权限相关 -->
+            <xsd:element type="acl" name="acl" minOccurs="0" maxOccurs="1"/>
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- 权限配置 -->
+    <xsd:complexType name="acl">
+        <xsd:annotation>
+            <xsd:documentation>用户权限配置</xsd:documentation>
+        </xsd:annotation>
+        <!-- 首先是角色相关 -->
+        <xsd:choice maxOccurs="3">
+            <xsd:element name="roles" type="elementAclRoles" />
+            <xsd:element name="resources" type="elementAclResources" />
+            <xsd:element name="grants" type="elementAclGrants" />
         </xsd:choice>
     </xsd:complexType>
     <!--定义配置相关 -->
@@ -186,6 +200,93 @@
                     <xsd:attribute name="context" use="optional"/>
                 </xsd:complexType>
             </xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- 定义授权角色部分 -->
+    <xsd:complexType name="elementAclRoles">
+        <xsd:annotation>
+            <xsd:documentation>声明授权角色信息部分</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="0" maxOccurs="1">
+            <xsd:element name="role" type="elementAclRole" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="elementAclRole">
+        <xsd:annotation>
+            <xsd:documentation>声明资源权限角色相关的元素</xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="parents" type="elementParent" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attributeGroup ref="attributeGroupForRole" />
+    </xsd:complexType>
+    <xsd:attributeGroup name="attributeGroupForRole">
+        <xsd:annotation>
+            <xsd:documentation>声明一系列和角色相关的属性</xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="id" use="required" type="xsd:string" />
+        <xsd:attribute name="title" use="required" type="xsd:string" />
+        <xsd:attribute name="description" use="required" type="xsd:string" />
+        <xsd:attribute name="deprecated" use="optional" default="false" type="xsd:boolean" />
+    </xsd:attributeGroup>
+    <xsd:complexType name="elementParent">
+        <xsd:annotation><xsd:documentation>声明元素父信息的元素</xsd:documentation></xsd:annotation>
+        <xsd:choice>
+                <xsd:element name="parent" type="elementParentInner" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="refer" type="xsd:string" />
+    </xsd:complexType>
+    <xsd:complexType name="elementParentInner">
+            <xsd:attribute name="refer" type="xsd:string" />
+    </xsd:complexType>
+    <!-- 定义授权资源部分 -->
+    <xsd:complexType name="elementAclResources">
+        <xsd:annotation>
+            <xsd:documentation>声明授权资源信息部分</xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="resource" type="elementAclResource" maxOccurs="unbounded"/>
+        </xsd:choice>
+    </xsd:complexType>
+    <xsd:complexType name="elementAclResource">
+        <xsd:annotation><xsd:documentation>授权资源声明</xsd:documentation></xsd:annotation>
+        <xsd:attributeGroup ref="attributeGroupForResource" />
+    </xsd:complexType>
+    <xsd:attributeGroup name="attributeGroupForResource">
+        <xsd:attributeGroup ref="attributeGroupForRole">
+        </xsd:attributeGroup>
+        <xsd:attribute name="class" use="optional" type="xsd:string" />
+        <xsd:attribute name="parent" use="optional" type="xsd:string" />
+    </xsd:attributeGroup>
+
+    <!-- 定义授权规则部分 -->
+    <xsd:complexType name="elementAclGrants">
+        <xsd:annotation>
+            <xsd:documentation>声明授权规则部分</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="0" maxOccurs="1">
+            <xsd:element name="grant" type="elementAclGrant" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="elementAclGrant">
+        <xsd:annotation><xsd:documentation>授权声明</xsd:documentation></xsd:annotation>
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="privileges" type="elementPrivilege" />
+        </xsd:choice>
+        <xsd:attributeGroup ref="attributeGroupForGrant" />
+    </xsd:complexType>
+    <xsd:attributeGroup name="attributeGroupForGrant">
+        <xsd:attribute name="title" type="xsd:string" use="required"/>
+        <xsd:attribute name="roleId" type="xsd:string" />
+        <xsd:attribute name="resourceId" type="xsd:string" />
+        <xsd:attribute name="allowed" type="xsd:boolean" />
+        <xsd:attribute name="assertion" type="xsd:string" />
+        <xsd:attribute name="deprecated" type="xsd:boolean" default="false" use="optional" />
+    </xsd:attributeGroup>
+    <xsd:complexType name="elementPrivilege">
+        <xsd:annotation><xsd:documentation>权限信息集合</xsd:documentation></xsd:annotation>
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="privilege" type="xsd:string"/>
         </xsd:choice>
     </xsd:complexType>
     <!-- 定义通用信息部分 -->

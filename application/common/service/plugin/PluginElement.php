@@ -259,6 +259,70 @@ class PluginElement implements \Serializable
         }
         if (!empty($depends)) $element->setElement('depends', $depends);
 
+        //现在新增解析，处理授权部分
+        $acl_config = ['roles' => [], 'resources' => [], 'grants' => []];
+        $roles_dom = $xpath->query('/x:manifest/x:acl/x:roles/x:role');
+        /** @var \DOMNode $role_dom*/
+        $role_keys = ['id', 'title', 'description', 'deprecated'];
+        foreach ($roles_dom as $role_dom) {
+            $tmp = ['parents' => [], 'deprecated' => false];
+            if($role_dom->attributes) {
+                foreach ($role_keys as $role_key) {
+                    $role_value = $role_dom->attributes->getNamedItem($role_key);
+                    if ($role_value) {
+                        $tmp[$role_key] = XmlUtils::phpize($role_value->textContent);
+                    }
+                }
+            }
+            //接下来处理父元素
+            $parent_doms = $xpath->query('./x:parents//x:parent', $role_dom);
+            /** @var \DOMNode $parent_dom */
+            foreach($parent_doms as $parent_dom) {
+                if($parent_dom->attributes) {
+                    $tmp['parents'][] = $parent_dom->attributes->getNamedItem('refer')->textContent;
+                }
+            }
+            $tmp['parents'] = array_unique(array_filter($tmp['parents']));
+            $acl_config['roles'][] = $tmp;
+        }
+        //开始处理资源部分
+        $resource_doms = $xpath->query('/x:manifest/x:acl/x:resources/x:resource');
+        /** @var \DOMNode $resource_dom*/
+        $resource_keys = ['id', 'title', 'description', 'deprecated', 'class', 'parent'];
+        foreach ($resource_doms as $resource_dom) {
+            $tmp = ['deprecated' => false];
+            if($resource_dom->attributes) {
+                foreach ($resource_keys as $resource_key) {
+                    $resource_value = $resource_dom->attributes->getNamedItem($resource_key);
+                    if ($resource_value) {
+                        $tmp[$resource_key] = XmlUtils::phpize($resource_value->textContent);
+                    }
+                }
+            }
+            if(!empty($tmp)) $acl_config['resources'][] = $tmp;
+        }
+        //开始处理授权规则部分
+        $grant_doms = $xpath->query('/x:manifest/x:acl/x:grants/x:grant');
+        /** @var \DOMNode $grant_dom*/
+        $grant_keys = ['roleId', 'title', 'resourceId', 'deprecated', 'assertion', 'allowed'];
+        foreach ($grant_doms as $grant_dom) {
+            $tmp = ['privileges' => [], 'deprecated' => false];
+            if($grant_dom->attributes) {
+                foreach ($grant_keys as $grant_key) {
+                    $grant_value = $grant_dom->attributes->getNamedItem($grant_key);
+                    if ($grant_value) $tmp[$grant_key] = XmlUtils::phpize($grant_value->textContent);
+                }
+            }
+            //接下来是权限名
+
+            $privilege_doms = $xpath->query('./x:privileges//x:privilege', $grant_dom);
+            /** @var \DOMNode $privilege_dom */
+            foreach($privilege_doms as $privilege_dom) {
+                $tmp['privileges'][] = $privilege_dom->textContent;
+            }
+            $acl_config['grants'][] = $tmp;
+        }
+        $element->setElement('acl_config', $acl_config);
         return $element;
     }
 

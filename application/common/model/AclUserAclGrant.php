@@ -6,10 +6,9 @@
  * Time: 10:30
  */
 
-namespace app\manager\model;
+namespace app\common\model;
 
 
-use app\common\model\BaseModel;
 use think\Cache;
 use Zend\Permissions\Acl\Acl;
 

@@ -6,10 +6,9 @@
  * Time: 17:00
  */
 
-namespace app\manager\model;
+namespace app\common\model;
 
 
-use app\common\model\BaseModel;
 
 class AclRolePrice extends BaseModel
 {

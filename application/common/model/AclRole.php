@@ -14,11 +14,9 @@
  * Time: 17:00
  */
 
-namespace app\manager\model;
+namespace app\common\model;
 
 
-use app\common\model\BaseModel;
-use app\common\model\Wxuser;
 use think\Cache;
 use think\exception\DbException;
 use Zend\Permissions\Acl\Acl;

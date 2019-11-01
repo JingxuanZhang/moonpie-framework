@@ -7,13 +7,6 @@
  *  with this source code in the file LICENSE.
  */
 
-/**
- * Created by PhpStorm.
- * User: johnzhang
- * Date: 2019/7/27 0027
- * Time: 上午 9:57
- */
-
 namespace app\common\service\plugin\migration;
 
 

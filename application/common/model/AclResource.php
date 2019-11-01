@@ -6,7 +6,7 @@
  * Time: 10:07
  */
 
-namespace app\manager\model;
+namespace app\common\model;
 
 
 use app\common\model\BaseModel;

@@ -9,9 +9,9 @@
 namespace app\common\service\security;
 
 
-use app\manager\model\AclResource;
-use app\manager\model\AclRole;
-use app\manager\model\AclUserAclGrant;
+use app\common\model\AclResource;
+use app\common\model\AclRole;
+use app\common\model\AclUserAclGrant;
 use Psr\Log\LoggerInterface;
 use think\Hook;
 use Zend\Permissions\Acl\Acl;
