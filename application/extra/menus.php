@@ -25,6 +25,7 @@ return [
         'icon' => 'icon-home',
         'route name' => 'backend.home',
         'parent' => 'backend.menu_container',
+        'weight' => -1,
     ],
     'backend.admin' => [
         'title' => '管理员',
@@ -43,6 +44,7 @@ return [
         'title' => '角色管理',
         'route name' => 'backend.authorize_index',
         'parent' => 'backend.basic',
+        'weight' => -5,
     ],
     'backend.basic_authorize_res' => [
         'title' => '权限资源管理',
@@ -53,10 +55,12 @@ return [
         'title' => '权限规则管理',
         'route name' => 'backend.authorize_rule',
         'parent' => 'backend.basic',
+        'weight' => 16,
     ],
     'backend.basic_authorize_price' => [
         'title' => '角色转化规则',
         'route name' => 'backend.authorize_price',
         'parent' => 'backend.basic',
+        'weight' => 6,
     ],
 ];

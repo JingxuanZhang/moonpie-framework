@@ -33,7 +33,7 @@ class MenuService
 
     public function collectMenus($useCache = true)
     {
-        if(!$this->collectDone) {
+        if (!$this->collectDone) {
             if ($useCache) {
                 $cache_data = Cache::get(static::CACHE_KEY_MENU_CACHE_NAME, false);
             } else {
@@ -43,13 +43,13 @@ class MenuService
                 $source_local = Config::get('menus');
                 $source_plugin = $this->collectFromPlugins();
                 $cache_data = array_merge($source_plugin, $source_local);
-            }
-            $params = ['menus' => $cache_data];
-            Hook::listen('system.collect_menu_declares', $params);
-            $cache_data = $params['menus'];
-            array_walk($cache_data, [$this, 'prepareMenuDefaultKey']);
-            if ($useCache) {
-                Cache::set(static::CACHE_KEY_MENU_CACHE_NAME, $cache_data);
+                $params = ['menus' => $cache_data];
+                Hook::listen('system.collect_menu_declares', $params);
+                $cache_data = $params['menus'];
+                array_walk($cache_data, [$this, 'prepareMenuDefaultKey']);
+                if ($useCache) {
+                    Cache::set(static::CACHE_KEY_MENU_CACHE_NAME, $cache_data);
+                }
             }
             $this->collectDone = true;
             $this->menuCollection = $cache_data;
@@ -93,28 +93,41 @@ class MenuService
             $top = $top_menu;
             $sub_data = $this->findSubMenuTrees($top, $top_key, $depth, $maxDepth);
             if (!empty($sub_data)) {
+                uasort($sub_data, [$this, 'sortItem']);
                 $top['sub_data'] = $sub_data;
             }
             $element = new MenuElement($top, $top_key);
             $element->calcActiveTrail();
             $tree_data[$top_key] = $element;
         }
+        uasort($tree_data, [$this, 'sortItem']);
         return $tree_data;
+    }
+    protected function sortItem($a, $b) {
+        $a_weight = $a->getWeight();
+        $b_weight = $b->getWeight();
+        if($a_weight == $b_weight) return 0;
+        return $a_weight > $b_weight ? 1 : -1;
     }
 
     protected function findSubMenuTrees($parent, $key, $depth, $max)
     {
         $tree_data = [];
-        if($depth >= $max) return $tree_data;
-        $menus = array_filter($this->menuCollection, function($definition)use($key){
+        if ($depth >= $max) return $tree_data;
+        $menus = array_filter($this->menuCollection, function ($definition) use ($key) {
             return isset($definition['parent']) && $definition['parent'] == $key;
         });
-        foreach($menus as $menu_key => $definition) {
-            $definition['sub_data'] = $this->findSubMenuTrees($definition, $menu_key, $depth+1, $max);
+        foreach ($menus as $menu_key => $definition) {
+            $sub_data = $this->findSubMenuTrees($definition, $menu_key, $depth + 1, $max);
+            if(!empty($sub_data)){
+                uasort($sub_data, [$this, 'sortItem']);
+                $definition['sub_data'] = $sub_data;
+            }
             $tree_data[$menu_key] = new MenuElement($definition, $menu_key);
         }
         return $tree_data;
     }
+
     public function reset()
     {
         //@todo 重置菜单信息数据

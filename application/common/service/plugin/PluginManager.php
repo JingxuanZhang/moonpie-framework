@@ -203,7 +203,7 @@ class PluginManager
                                 }
                                 $strategy = Arr::get($config, 'strategy', 'override');
                                 if($strategy == 'override') {
-                                    Config::load($real_path, $config_name, $range_name);
+                                    Config::set($config_name, include $real_path, $range_name);
                                 }else {
                                     $params[] = compact('strategy', 'real_path', 'config_name', 'range_name', 'plugin_element');
                                 }

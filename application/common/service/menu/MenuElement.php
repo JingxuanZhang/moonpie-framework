@@ -37,7 +37,7 @@ class MenuElement
         if (is_null($this->subTree)) {
             if (!$this->hasChildren() || !$this->isEnable()) return $this->subTree = [];
             $sub = $this->element['sub_data'];
-            usort($sub, function ($a, $b) {
+            uasort($sub, function ($a, $b) {
                 $a_weight = $a->getWeight();
                 $b_weight = $b->getWeight();
                 return $a_weight > $b_weight ? 1 : $a_weight < $b_weight ? -1 : 0;
