@@ -198,12 +198,17 @@ class PluginManager
                                     $config_name = $plugin_element->getCode();
                                 }else if($config_name == 'global'){
                                     $config_name = null;//如果是全局配置，那么设为null
+                                    $range_name = '';
                                 } else if ($range_name == 'plugin') {
                                     $config_name = "{$plugin_element->getCode()}.{$config_name}";
                                 }
                                 $strategy = Arr::get($config, 'strategy', 'override');
                                 if($strategy == 'override') {
-                                    Config::set($config_name, include $real_path, $range_name);
+                                    if(stripos($config_name, '.') === false) {
+                                        Config::load($real_path, $config_name, $range_name);
+                                    }else {
+                                        Config::set($config_name, include $real_path, $range_name);
+                                    }
                                 }else {
                                     $params[] = compact('strategy', 'real_path', 'config_name', 'range_name', 'plugin_element');
                                 }
