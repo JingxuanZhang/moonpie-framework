@@ -40,6 +40,7 @@ const PluginAsset = {
       parse_data.forEach(function(plugin){
         let alias = '@/plugin/' + plugin.code, aliases = {}
         aliases[alias] = plugin.basePath
+        //console.log('aliases is', aliases)
         //首先添加别名
         encore.addAliases(aliases)
         //js部分
@@ -55,7 +56,7 @@ const PluginAsset = {
             $src = $src.map(function($item){
               return path.format({dir: plugin.basePath, base: $item})
             })
-            console.log('$src is', $src, plugin)
+            //console.log('$src is', $src, plugin)
             encore.addEntry(name, $src)
           })
         }
