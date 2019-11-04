@@ -22,7 +22,7 @@ class PluginToolCommand extends Command
     {
         $this->setName('mp:plugin-tool')
             ->setDescription('help developer manage plugin')
-            ->addArgument('action', Argument::REQUIRED, 'action name, support: menu-clear,asset-clear,migration-run,migration-rollback,migration-breakpoint')
+            ->addArgument('action', Argument::REQUIRED, 'action name, support: menu-clear,asset-clear')
             ->addOption('plugin', null, Option::VALUE_OPTIONAL | Option::VALUE_IS_ARRAY, 'plugin which will clear asset, migration for', [])
             ;
     }
