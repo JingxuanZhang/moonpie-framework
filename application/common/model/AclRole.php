@@ -29,6 +29,18 @@ class AclRole extends BaseModel implements RoleInterface
         $rid = self::where('code', 'member')->value('id');
         return $rid ? $rid : null;
     }
+
+    /**
+     * 根据code获取其对应的角色ID
+     * @param $code
+     * @param null $default
+     * @return mixed|null
+     */
+    public static function getRidByCode($code, $default = null)
+    {
+        $rid = static::where('code', $code)->value('id');
+        return $rid ? $rid : $default;
+    }
     public static function addRolesTo(Acl $manager)
     {
         //这里应该按照顺序处理
