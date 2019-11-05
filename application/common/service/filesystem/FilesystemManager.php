@@ -45,7 +45,7 @@ class FilesystemManager
         }else {
             if($init) $filesystem = $this->factory->create($default_code, $this->configs['engines'][$default_code]);
         }
-        if ($init) return [$default_code, $this->filesystems[$default_code] = $filesystem];
+        if ($init) return [$default_code, $this->filesystems[$default_code] = $filesystem, $this->configs['engines'][$default_code]];
         return $default_code;
     }
     /**

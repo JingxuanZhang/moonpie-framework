@@ -17,4 +17,5 @@ namespace app\common\service\filesystem;
 interface VisitManagerInterface
 {
     public function getDomain($code, array $configs);
+    public function getUrl($path, $code, array $configs);
 }

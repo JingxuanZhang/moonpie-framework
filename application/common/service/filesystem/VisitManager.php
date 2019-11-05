@@ -22,4 +22,9 @@ class VisitManager implements VisitManagerInterface
                 return trim(Arr::get($configs, 'domain', ''), '\\/') . '/';
         }
     }
+    public function getUrl($path, $code, array $configs)
+    {
+        $domain = $this->getDomain($code, $configs);
+        return rtrim($domain, '/') . '/' . ltrim($path, '/');
+    }
 }

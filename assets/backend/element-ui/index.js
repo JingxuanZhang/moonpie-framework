@@ -6,7 +6,7 @@
  *  with this source code in the file LICENSE.
  */
 
-import {Button, Container, Dialog, Form, Input, Switch, FormItem} from 'element-ui'
+import {Button, Container, Dialog, Form, Input, Switch, FormItem, Image, Alert} from 'element-ui'
 
 function install(Vue) {
   Vue.use(Dialog)
@@ -16,5 +16,7 @@ function install(Vue) {
   Vue.use(Switch)
   Vue.use(Input)
   Vue.use(FormItem)
+  Vue.use(Image)
+  Vue.use(Alert)
 }
 export default install
