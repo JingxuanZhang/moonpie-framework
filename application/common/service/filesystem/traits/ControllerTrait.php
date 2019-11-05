@@ -138,7 +138,7 @@ trait ControllerTrait
             'file_name' => str_replace('\\', '/', $fileName),
             'file_size' => $fileInfo['size'],
             'file_type' => $fileType,
-            'scope' => $scope,
+            'scope' => $scope, 'is_delete' => 0,
             'extension' => pathinfo($fileInfo['path'], PATHINFO_EXTENSION),
         ]);
         return $model;

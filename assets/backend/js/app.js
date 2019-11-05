@@ -173,7 +173,8 @@ global.layer = layer;
             var $this = this
                 // 配置项
                 , defaults = {
-                    name: 'iFile'            // input name
+                    name: 'iFile',            // input name
+                    delegate: null //委托元素
                     , imagesList: '.uploader-list'    // 图片列表容器
                     , imagesItem: '.file-item'       // 图片元素容器
                     , imageDelete: '.file-item-delete'  // 删除按钮元素
@@ -183,17 +184,20 @@ global.layer = layer;
                 }
                 , options = $.extend({}, defaults, option);
             // 显示文件库 选择文件
-            $this.fileLibrary({
+            const $target = options.delegate ? $(document) : $this
+            console.log('target is', $target)
+            $target.fileLibrary({
+                childSelector: options.delegate,
                 type: 'image'
                 , done: function (data, $touch) {
                     // 判断回调参数是否存在, 否则执行默认
                     if (typeof options.done === 'function') {
-                        return options.done(data, $touch);
+                        return options.done(data, $touch, $this);
                     }
                     // 新增图片列表
                     var list = options.multiple ? data : [data[0]];
                     var $html = $(template('tpl-file-item', {list: list, name: options.name}))
-                        , $imagesList = $this.next(options.imagesList);
+                        , $imagesList = options.delegate ? $this.find(options.delegate).next(options.imagesList) : $this.next(options.imagesList);
                     if (
                         options.limit > 0
                         && $imagesList.find(options.imagesItem).length + list.length > options.limit

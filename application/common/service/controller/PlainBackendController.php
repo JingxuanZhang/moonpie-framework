@@ -221,9 +221,10 @@ abstract class PlainBackendController extends Controller
      * 生成查询所需要的条件,排序方式
      * @param mixed $searchfields 快速查询的字段
      * @param boolean $relationSearch 是否关联查询
+     * @param string|null 如果使用关联查询,此模型的别名
      * @return array
      */
-    protected function buildparams($searchfields = null, $relationSearch = null)
+    protected function buildparams($searchfields = null, $relationSearch = null, $alias = null)
     {
         $searchfields = is_null($searchfields) ? $this->searchFields : $searchfields;
         $relationSearch = is_null($relationSearch) ? $this->relationSearch : $relationSearch;
@@ -239,7 +240,8 @@ abstract class PlainBackendController extends Controller
         $tableName = '';
         if ($relationSearch) {
             if (!empty($this->model)) {
-                $name = \think\Loader::parseName(basename(str_replace('\\', '/', get_class($this->model))));
+                if(is_null($alias)) $name = \think\Loader::parseName(basename(str_replace('\\', '/', get_class($this->model))));
+                else $name = $alias;
                 $tableName = $name . '.';
             }
             $sortArr = explode(',', $sort);

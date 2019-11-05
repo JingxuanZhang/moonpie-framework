@@ -12,6 +12,7 @@ namespace app\common\service\filesystem\plugin;
 use League\Flysystem\FileExistsException;
 use League\Flysystem\Plugin\AbstractPlugin;
 use think\File;
+use think\Lang;
 
 class ThinkUploadFilePlugin extends AbstractPlugin
 {

@@ -40,7 +40,7 @@
         triggerEvent: function () {
             var _this = this;
             // 点击开启文件库弹窗
-            _this.$trigger.click(function () {
+            _this.$trigger.on('click', this.options.childSelector, function () {
                 _this.$touch = $(this);
                 _this.showLibraryModal();
             });

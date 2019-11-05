@@ -19,8 +19,8 @@ import {
   Row,
   Col,
   Table,
-    TableColumn,
-  Pagination
+  TableColumn,
+  Pagination, Select, Option, InputNumber
 } from 'element-ui'
 
 function install(Vue) {
@@ -38,5 +38,8 @@ function install(Vue) {
   Vue.use(Table)
   Vue.use(TableColumn)
   Vue.use(Pagination)
+  Vue.use(Select)
+  Vue.use(Option)
+  Vue.use(InputNumber)
 }
 export default install
