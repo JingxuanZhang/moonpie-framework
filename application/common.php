@@ -9,25 +9,6 @@
 use think\Log;
 use think\Request;
 
-// 应用公共文件
-
-function write_log($txt)
-{
-    \think\App::$debug && Log::record($txt);
-}
-
-/**
- * 打印调试函数
- * @param $content
- * @param $is_die
- */
-function pre($content, $is_die = true)
-{
-    header('Content-type: text/html; charset=utf-8');
-    echo '<pre>' . print_r($content, true);
-    $is_die && die();
-}
-
 /**
  * 驼峰命名转下划线命名
  * @param $str
@@ -60,104 +41,6 @@ function base_url()
     $request = Request::instance();
     $subDir = str_replace('\\', '/', dirname($request->server('PHP_SELF')));
     return $request->scheme() . '://' . $request->host() . $subDir . ($subDir === '/' ? '' : '/');
-}
-
-/**
- * 写入日志
- * @param string|array $values
- * @param string $dir
- * @return bool|int
- */
-function write_log2($values, $dir)
-{
-    if (is_array($values))
-        $values = print_r($values, true);
-    // 日志内容
-    $content = '[' . date('Y-m-d H:i:s') . ']' . PHP_EOL . $values . PHP_EOL . PHP_EOL;
-    try {
-        // 文件路径
-        $filePath = $dir . '/logs/';
-        // 路径不存在则创建
-        !is_dir($filePath) && mkdir($filePath, 0755, true);
-        // 写入文件
-        return file_put_contents($filePath . date('Ymd') . '.log', $content, FILE_APPEND);
-    } catch (\Exception $e) {
-        return false;
-    }
-}
-
-function merge_log($value, $type, $title_log = false)
-{
-    // 日志内容
-    if ($title_log) {
-        $content = PHP_EOL . '[' . date('Y-m-d H:i:s') . ']' . PHP_EOL . $value . PHP_EOL;
-    } else {
-        $content = $value . PHP_EOL;
-    }
-    try {
-        // 文件路径
-        $filePath = RUNTIME_PATH . '/log/merge_log/';
-        // 路径不存在则创建
-        !is_dir($filePath) && mkdir($filePath, 0755, true);
-        // 写入文件
-        return file_put_contents($filePath . $type . '.log', $content, FILE_APPEND);
-    } catch (\Exception $e) {
-        return false;
-    }
-}
-
-/**
- * 写入日志 (使用tp自带驱动记录到runtime目录中)
- * @param $value
- * @param string $type
- * @return bool
- */
-function log_write($value, $type = 'yoshop-info')
-{
-    $msg = is_string($value) ? $value : print_r($value, true);
-    return Log::write($msg, $type);
-}
-
-/**
- * curl请求指定url (get)
- * @param $url
- * @param array $data
- * @return mixed
- */
-function curl($url, $data = [])
-{
-    // 处理get数据
-    if (!empty($data)) {
-        $url = $url . '?' . http_build_query($data);
-    }
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_HEADER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);//这个是重点。
-    $result = curl_exec($curl);
-    curl_close($curl);
-    return $result;
-}
-
-/**
- * curl请求指定url (post)
- * @param $url
- * @param array $data
- * @return mixed
- */
-function curlPost($url, $data = [])
-{
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return $result;
 }
 
 if (!function_exists('array_column')) {
@@ -293,46 +176,7 @@ function get_version()
     return $version['version'];
 }
 
-if (!function_exists('wx_app')) {
-    function wx_app($appType = 'officialAccount', $config = [], $cacheOption = [])
-    {
-        if (empty($config)) {
-            $configWrapper = config("wxapp.{$appType}");
-            if ($configWrapper) {
-                $config = $configWrapper['config'];
-            } else {
-                $config = [];
-            }
-        }
-        if (empty($cacheOption)) {
-            $configWrapper = config("wxapp.{$appType}");
-            if ($configWrapper) {
-                $cacheOption = $configWrapper['cache'];
-            } else {
-                $cacheOption = [];
-            }
-        }
-        /** @var \EasyWeChat\Kernel\ServiceContainer $application */
-        //$application = \EasyWeChat\Factory::{$appType}($config);
-        $application = call_user_func("\EasyWeChat\Factory::{$appType}", $config);
-        $cacheShort = ucfirst($cacheOption['type']);
-        $cacheType = $cacheShort . 'Cache';
-        $className = "Symfony\\Component\\Cache\\Simple\\{$cacheType}";
-        if ($cacheShort == 'Redis') {
-            if (extension_loaded('redis')) {
-                $redis = new \Redis();
-                $redis->connect($cacheOption['options']['host'], $cacheOption['options']['port']);
-                if (!empty($cacheOption['options']['password'])) {
-                    $redis->auth($cacheOption['options']['password']);
-                }
-                $redis->select(isset($cacheOption['options']['db']) ? $cacheOption['options']['db'] : 0);
-                $application->rebind('cache', new $className($redis));
-                return $application;
-            }
-        }
-        return $application;
-    }
-}
+
 if (!function_exists('to_cli_url')) {
     function to_cli_url($url = '', $vars = '', $suffix = true, $domain = false)
     {
@@ -363,56 +207,7 @@ if (!function_exists('app')) {
         return $container->get($id);
     }
 }
-if (!function_exists('seconds2duration')) {
-    /**
-     * 计算持续时长
-     *
-     * @param int $seconds 秒数
-     * @return string $duration 5天10小时43分钟40秒
-     */
-    function second2duration($seconds, $ignoreSeconds = true)
-    {
-        $duration = '';
 
-        $seconds = (int)$seconds;
-        if ($seconds <= 0) {
-            return $duration;
-        }
-
-        list($day, $hour, $minute, $second) = explode(' ', gmstrftime('%j %H %M %S', $seconds));
-
-        $day -= 1;
-        if ($day > 0) {
-            $duration .= (int)$day . '天';
-        }
-        if ($hour > 0) {
-            $duration .= (int)$hour . '小时';
-        }
-        if ($minute > 0) {
-            $duration .= (int)$minute . '分钟';
-        }
-        if ($second > 0 && !$ignoreSeconds) {
-            $duration .= (int)$second . '秒';
-        }
-
-        return $duration;
-    }
-}
-if (!function_exists('msectime')) {
-    function msectime()
-    {
-        list($msec, $sec) = explode(' ', microtime());
-        $msectime = (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
-        return $msectime;
-    }
-}
-if (!function_exists('save_log')) {
-    function save_log($key, $content, $v1 = '', $v2 = '')
-    {
-        $record = new \app\common\model\Log();
-        return false !== $record->save(compact('content', 'v1', 'v2', 'key'));
-    }
-}
 if (!function_exists('is_absolute_path')) {
     /**
      * Returns whether the file path is an absolute path.
@@ -427,5 +222,16 @@ if (!function_exists('is_absolute_path')) {
                 && strspn($path, '/\\', 2, 1)
             )
             || null !== parse_url($path, PHP_URL_SCHEME);
+    }
+}
+if (!function_exists('config_get')) {
+    function config_get($name, $default = null, $range = '') {
+        $index = strpos($name, '.');
+        if($index > 0) {
+            $config = (array)\think\Config::get(substr($name, 0, $index), $range);
+            return \EasyWeChat\Kernel\Support\Arr::get($config, substr($name, $index+1), $default);
+        }
+        $config = \think\Config::get($name, $range);
+        return is_null($config) ? $default : $config;
     }
 }

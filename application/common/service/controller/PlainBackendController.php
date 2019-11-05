@@ -85,7 +85,7 @@ abstract class PlainBackendController extends Controller
      * @throws \think\exception\DbException
      * @throws \Exception
      */
-    private function layout()
+    protected function layout()
     {
         // 验证当前请求是否在白名单
         if (!in_array($this->routeUri, $this->notLayoutAction)) {
@@ -152,7 +152,6 @@ abstract class PlainBackendController extends Controller
             empty($this->store)
             || (isset($this->store['is_login']) && (int) $this->store['is_login'] !== 1)
         ) {
-            $this->redirect('backend.login');
             $this->handleNeedLogin($this->request);
             return false;
         }
