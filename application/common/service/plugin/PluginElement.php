@@ -10,6 +10,7 @@
 namespace app\common\service\plugin;
 
 
+use app\common\service\plugin\acl\AclManager;
 use app\common\service\plugin\asset\AssetManager;
 use app\common\service\plugin\migration\MigrationManager;
 use app\common\util\XmlUtils;
@@ -334,6 +335,9 @@ class PluginElement implements \Serializable
         //其次是前端资源
         $asset_manager = new AssetManager($manager);
         $asset_manager->install($this, $force);
+        //新增资源权限规则
+        $acl_manager = new AclManager($manager, $this);
+        $acl_manager->install($force);
     }
 
     public function onUninstall(PluginManager $manager, $force)
@@ -344,6 +348,10 @@ class PluginElement implements \Serializable
         //其次是前端资源
         $asset_manager = new AssetManager($manager);
         $asset_manager->uninstall($this, $force);
+
+        //新增资源权限规则
+        $acl_manager = new AclManager($manager, $this);
+        $acl_manager->uninstall($force);
     }
 
     public function onUpgrade(PluginManager $manager, $force)
@@ -354,6 +362,10 @@ class PluginElement implements \Serializable
         //其次是前端资源
         $asset_manager = new AssetManager($manager);
         $asset_manager->upgrade($this, $force);
+
+        //新增资源权限规则
+        $acl_manager = new AclManager($manager, $this);
+        $acl_manager->upgrade($force);
     }
 
     public function getAssetConfig()
