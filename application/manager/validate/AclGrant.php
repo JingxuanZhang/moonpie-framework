@@ -44,7 +44,7 @@ class AclGrant extends Validate
     protected function validResourceId($id, $rule, $data, $field, $title)
     {
         $label = "{$field}.validResourceId";
-        $exists = \app\manager\model\AclResource::where('id', $id)->count() > 0;
+        $exists = \app\common\model\AclResource::where('id', $id)->count() > 0;
         if (!$exists) {
             $this->message($label, "{$title}不是有效的资源信息");
             return false;
@@ -55,7 +55,7 @@ class AclGrant extends Validate
     protected function validRoleId($id, $rule, $data, $field, $title)
     {
         $label = "{$field}.validRoleId";
-        $exists = \app\manager\model\AclRole::where('id', $id)->count() > 0;
+        $exists = \app\common\model\AclRole::where('id', $id)->count() > 0;
         if (!$exists) {
             $this->message($label, "{$title}不是有效的角色信息");
             return false;

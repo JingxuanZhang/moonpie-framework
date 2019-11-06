@@ -97,16 +97,20 @@ class MenuService
                 $top['sub_data'] = $sub_data;
             }
             $element = new MenuElement($top, $top_key);
-            $element->calcActiveTrail();
-            $tree_data[$top_key] = $element;
+            if ($element->isEnable()) {
+                $element->calcActiveTrail();
+                $tree_data[$top_key] = $element;
+            }
         }
         uasort($tree_data, [$this, 'sortItem']);
         return $tree_data;
     }
-    protected function sortItem($a, $b) {
+
+    protected function sortItem($a, $b)
+    {
         $a_weight = $a->getWeight();
         $b_weight = $b->getWeight();
-        if($a_weight == $b_weight) return 0;
+        if ($a_weight == $b_weight) return 0;
         return $a_weight > $b_weight ? 1 : -1;
     }
 
@@ -119,11 +123,14 @@ class MenuService
         });
         foreach ($menus as $menu_key => $definition) {
             $sub_data = $this->findSubMenuTrees($definition, $menu_key, $depth + 1, $max);
-            if(!empty($sub_data)){
+            if (!empty($sub_data)) {
                 uasort($sub_data, [$this, 'sortItem']);
                 $definition['sub_data'] = $sub_data;
             }
-            $tree_data[$menu_key] = new MenuElement($definition, $menu_key);
+            $element = new MenuElement($definition, $menu_key);
+            if ($element->isEnable()) {
+                $tree_data[$menu_key] = $element;
+            }
         }
         return $tree_data;
     }

@@ -253,7 +253,7 @@ class Authorize extends Base
     public function rules()
     {
         $this->assign('page_title', '权限授权管理');
-        $this->assign('add_url', url('basic.authorize/add_rule'));
+        $this->assign('add_url', url('backend.authorize_add_rule'));
         $this->assign('list', AclUserAclGrant::where('id', '>', 0)->paginate(10));
         $this->assign('del_url', url('backend.authorize_drop_rule'));
         $this->assign('edit_uri', 'backend.authorize_edit_rule');

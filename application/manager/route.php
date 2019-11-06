@@ -31,7 +31,7 @@ Route::group($backend_group, function () {
     //角色部分
     Route::post(['backend.authorize_drop_role', '/authorize/drop-role'], 'manager/basic.authorize/drop_role'); //删除角色
     Route::rule(['backend.authorize_edit_role', '/authorize/edit-role/:id'], 'manager/basic.authorize/edit_role', 'get|post'); //编辑角色
-    Route::rule(['backend.authorize_add_role', '/authorize/add-rule'], 'manager/basic.authorize/add_role', 'get|post'); //添加角色
+    Route::rule(['backend.authorize_add_role', '/authorize/add-role'], 'manager/basic.authorize/add_role', 'get|post'); //添加角色
     Route::post(['backend.authorize_query_role', '/authorize/query-role'], 'manager/basic.authorize/query_role'); //查询角色
     //资源部分
     Route::post(['backend.authorize_drop_res', '/authorize/drop-resource'], 'manager/basic.authorize/drop_res'); //删除
