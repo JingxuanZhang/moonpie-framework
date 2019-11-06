@@ -142,4 +142,8 @@ class AclRole extends BaseModel implements RoleInterface
     {
         return $this->hasMany(AclUserAclGrant::class, 'role_id', 'id');
     }
+    public function getTitle()
+    {
+        return $this->getData('title');
+    }
 }
