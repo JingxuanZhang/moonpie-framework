@@ -17,7 +17,8 @@ public/uploads
 [Tt]est.php
 test/
 .vscode/
-/application/*/
+/application/index/
+/application/erp/
 /application/prod.php
 /application/production.php
 !application/extra/*
