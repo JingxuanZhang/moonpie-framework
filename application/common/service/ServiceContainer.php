@@ -74,6 +74,10 @@ class ServiceContainer extends Container
         $this['lock.store.semaphore'] = function () {
             return new SemaphoreStore();
         };
+
+        $this['config'] = function ($c) {
+            return new Collection(Config::get());
+        };
         //flock
         $this['lock.store.flock'] = function () {
             $dir = RUNTIME_PATH . 'lock' . DS . Config::get('app_status');
@@ -92,9 +96,6 @@ class ServiceContainer extends Container
             $store = $c['lock.store.flock'];
             $factory = new Factory($store);
             return $factory;
-        };
-        $this['config'] = function ($c) {
-            return new Collection(Config::get());
         };
         $this['logger'] = function ($c) {
             $logger = new LogManager($c);
