@@ -20,7 +20,7 @@ import {
   Col,
   Table,
   TableColumn,
-  Pagination, Select, Option, InputNumber, Cascader
+  Pagination, Select, Option, InputNumber, Cascader, Link
 } from 'element-ui'
 
 function install(Vue) {
@@ -42,5 +42,6 @@ function install(Vue) {
   Vue.use(Option)
   Vue.use(InputNumber)
   Vue.use(Cascader)
+  Vue.use(Link)
 }
 export default install

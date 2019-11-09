@@ -71,11 +71,10 @@ class LocalHandler implements EngineHandlerInterface
     public function renderViewForExternal(Request $request, array $viewConfig)
     {
         $default = [
-            'form_field' => 'please define your form field',
             'id' => 'storage_config_container',
             'config' => $this->getStorageConfig('local')['setting'],
         ];
-        $config = $default + $viewConfig;
+        $config = array_merge($viewConfig , $default);
         return View::instance()->fetch(__DIR__ . '/view/local_engine_config.html', $config);
     }
 

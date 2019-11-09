@@ -179,6 +179,7 @@ class PluginManager
     {
         $this->init();
         $params = [];
+        $hook_pool = [];
         /** @var PluginElement $plugin_element */
         foreach ($this->plugins as $plugin_element) {
             if (!$plugin_element->isEnable()) continue;
@@ -196,20 +197,20 @@ class PluginManager
                                 $config_name = Arr::get($config, 'name', '');
                                 if (empty($config_name)) {//如果没有填写，默认是插件自己的配置
                                     $config_name = $plugin_element->getCode();
-                                }else if($config_name == 'global'){
+                                } else if ($config_name == 'global') {
                                     $config_name = null;//如果是全局配置，那么设为null
                                     $range_name = '';
                                 } else if ($range_name == 'plugin') {
                                     $config_name = "{$plugin_element->getCode()}.{$config_name}";
                                 }
                                 $strategy = Arr::get($config, 'strategy', 'override');
-                                if($strategy == 'override') {
-                                    if(stripos($config_name, '.') === false) {
+                                if ($strategy == 'override') {
+                                    if (stripos($config_name, '.') === false) {
                                         Config::load($real_path, $config_name, $range_name);
-                                    }else {
+                                    } else {
                                         Config::set($config_name, include $real_path, $range_name);
                                     }
-                                }else {
+                                } else {
                                     $params[] = compact('strategy', 'real_path', 'config_name', 'range_name', 'plugin_element');
                                 }
                                 //Config::set($config_name, include $real_path, $range_name);
@@ -222,19 +223,8 @@ class PluginManager
                     if (empty($module)) {
                         //之后是钩子
                         $hooks = $plugin_element->getElement('hooks', []);
-                        usort($hooks, function ($a, $b) {
-                            $a_weight = Arr::get($a, 'priority', 0);
-                            $b_weight = Arr::get($b, 'priority', 0);
-                            return $a_weight > $b_weight ? 1 : $a_weight == $b_weight ? 0 : -1;
-                        });
-                        foreach ($hooks as $hook) {
-                            if (isset($hook['method'])) {
-                                $behavior = [$hook['class'], $hook['method']];
-                            } else {
-                                $behavior = $hook['class'];
-                            }
-                            Hook::add($hook['tag'], $behavior);
-                        }
+                        $hook_pool = array_merge($hook_pool, $hooks);
+
                         //还有自定义函数
                         $helpers = $plugin_element->getElement('helpers', []);
                         $base_path = $plugin_element->getRootPath();
@@ -262,6 +252,21 @@ class PluginManager
                         if ($command_object) $console->add($command_object);
                     }
                     break;
+            }
+        }
+        if (empty($module) && $scope == 'config' && !empty($hook_pool)) {
+            usort($hook_pool, function ($a, $b) {
+                $a_weight = Arr::get($a, 'priority', 0);
+                $b_weight = Arr::get($b, 'priority', 0);
+                return $a_weight > $b_weight ? -1 : $a_weight == $b_weight ? 0 : 1;
+            });
+            foreach ($hook_pool as $hook) {
+                if (isset($hook['method'])) {
+                    $behavior = [$hook['class'], $hook['method']];
+                } else {
+                    $behavior = $hook['class'];
+                }
+                Hook::add($hook['tag'], $behavior);
             }
         }
         return $params;
