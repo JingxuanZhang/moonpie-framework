@@ -141,4 +141,11 @@ class UploadFile extends BaseModel
             }
         });
     }
+    public function getMapData()
+    {
+        return [
+            'file_id' => $this->getData('file_id'),
+            'file_path' => $this->file_path,
+        ];
+    }
 }
