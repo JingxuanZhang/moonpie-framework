@@ -75,7 +75,7 @@ class LocalHandler implements EngineHandlerInterface
             'id' => 'storage_config_container',
             'config' => $this->getStorageConfig('local')['setting'],
         ];
-        $config = array_merge($default, $viewConfig);
+        $config = $default + $viewConfig;
         return View::instance()->fetch(__DIR__ . '/view/local_engine_config.html', $config);
     }
 
