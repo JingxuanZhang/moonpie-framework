@@ -17,7 +17,7 @@
 namespace app\manager\command;
 
 
-use app\manager\model\AclRole;
+use app\common\model\AclRole;
 use app\manager\model\Admin;
 use think\console\Command;
 use think\console\Input;
