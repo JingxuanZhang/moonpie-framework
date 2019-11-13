@@ -119,28 +119,16 @@ trait ControllerTrait
     }
     /**
      * 添加文件库上传记录
-     * @param $group_id
+     * @param $storageCode
+     * @param $groupId
      * @param $fileName
      * @param $fileInfo
      * @param $fileType
+     * @param $scope
      * @return UploadFile
      */
     private function addUploadFile($storageCode, $groupId, $fileName, $fileInfo, $fileType, $scope)
     {
-        // 存储域名
-        $file_domain = isset($fileInfo['domain']) ? $fileInfo['domain'] : '';
-        // 添加文件库记录
-        $model = new UploadFile;
-        $model->add([
-            'group_id' => $groupId > 0 ? (int) $groupId : 0,
-            'storage' => $storageCode,
-            'file_url' => $file_domain,
-            'file_name' => str_replace('\\', '/', $fileName),
-            'file_size' => $fileInfo['size'],
-            'file_type' => $fileType,
-            'scope' => $scope, 'is_delete' => 0,
-            'extension' => pathinfo($fileInfo['path'], PATHINFO_EXTENSION),
-        ]);
-        return $model;
+        return UploadFile::addUploadFile($storageCode, $groupId, $fileName, $fileInfo, $fileType, $scope);
     }
 }
