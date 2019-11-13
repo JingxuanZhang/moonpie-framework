@@ -43,9 +43,11 @@ class FilesystemManager
         $filesystem = null;
         if ($default_code && Arr::has($this->filesystems, $default_code)) {
         }else {
-            if($init) $filesystem = $this->factory->create($default_code, $this->configs['engines'][$default_code]);
+            if($init) {
+                $this->filesystems[$default_code] = $this->factory->create($default_code, $this->configs['engines'][$default_code]);
+            }
         }
-        if ($init) return [$default_code, $this->filesystems[$default_code] = $filesystem, $this->configs['engines'][$default_code]];
+        if ($init) return [$default_code, $this->filesystems[$default_code], $this->configs['engines'][$default_code]];
         return $default_code;
     }
     /**
