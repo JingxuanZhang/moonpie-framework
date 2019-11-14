@@ -228,13 +228,13 @@ abstract class PlainBackendController extends Controller
     {
         $searchfields = is_null($searchfields) ? $this->searchFields : $searchfields;
         $relationSearch = is_null($relationSearch) ? $this->relationSearch : $relationSearch;
-        $search = $this->request->get("search/a", []);
-        $filter = $this->request->get("filter/a", []);
-        $op = $this->request->get("op/a", []);
-        $sort = $this->request->get("sort", "id");
-        $order = $this->request->get("order", "DESC");
-        $offset = $this->request->get("offset", 0);
-        $limit = $this->request->get("limit", 0);
+        $search = $this->request->param("search/a", []);
+        $filter = $this->request->param("filter/a", []);
+        $op = $this->request->param("op/a", []);
+        $sort = $this->request->param("sort", "id");
+        $order = $this->request->param("order", "DESC");
+        $offset = $this->request->param("offset", 0);
+        $limit = $this->request->param("limit", 0);
         $filter = array_filter($filter ? $filter : []);
         $where = [];
         $tableName = '';
