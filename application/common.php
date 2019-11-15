@@ -6,7 +6,8 @@
  *  This source file is subject to the MIT license that is bundled
  *  with this source code in the file LICENSE.
  */
-use think\Log;
+
+use app\common\service\lock\LockFactoryInterface;
 use think\Request;
 
 /**
@@ -233,5 +234,23 @@ if (!function_exists('config_get')) {
         }
         $config = \think\Config::get($name, $range);
         return is_null($config) ? $default : $config;
+    }
+}
+if(!function_exists('scope_locker')) {
+    /**
+     * @param $scope
+     * @param $bin
+     * @param $resource
+     * @return \Symfony\Component\Lock\LockInterface
+     */
+    function scope_locker($scope, $bin, $resource) {
+        static $locks = [];
+        if(!isset($locks[$scope]) || is_null($locks[$scope])) {
+            /** @var LockFactoryInterface $factory */
+            $factory = app('lock.factory');
+            $locker = $factory->get($bin);
+            $locks[$scope] = $locker->createLock($resource);
+        }
+        return $locks[$scope];
     }
 }
