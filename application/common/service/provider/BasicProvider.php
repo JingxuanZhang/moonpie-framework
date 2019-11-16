@@ -16,6 +16,7 @@ use app\common\service\security\ResourceRegistry;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use think\Hook;
+use app\common\service\plugin\acl\AclManager as PluginAclManager;
 
 class BasicProvider implements ServiceProviderInterface
 {
@@ -38,6 +39,9 @@ class BasicProvider implements ServiceProviderInterface
             $params = compact($registry);
             Hook::listen('acl_init_assertion_registry', $params);
             return $registry;
+        };
+        $pimple['plugin.acl_manager'] = function($c){
+            return new PluginAclManager($c['plugin.manager']);
         };
     }
 }

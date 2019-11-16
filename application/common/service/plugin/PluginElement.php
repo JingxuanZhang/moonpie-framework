@@ -336,8 +336,8 @@ class PluginElement implements \Serializable
         $asset_manager = new AssetManager($manager);
         $asset_manager->install($this, $force);
         //新增资源权限规则
-        $acl_manager = new AclManager($manager, $this);
-        $acl_manager->install($force);
+        $acl_manager = new AclManager($manager);
+        $acl_manager->install($this, $force);
     }
 
     public function onUninstall(PluginManager $manager, $force)
@@ -350,8 +350,8 @@ class PluginElement implements \Serializable
         $asset_manager->uninstall($this, $force);
 
         //新增资源权限规则
-        $acl_manager = new AclManager($manager, $this);
-        $acl_manager->uninstall($force);
+        $acl_manager = new AclManager($manager);
+        $acl_manager->uninstall($this, $force);
     }
 
     public function onUpgrade(PluginManager $manager, $force)
@@ -364,8 +364,8 @@ class PluginElement implements \Serializable
         $asset_manager->upgrade($this, $force);
 
         //新增资源权限规则
-        $acl_manager = new AclManager($manager, $this);
-        $acl_manager->upgrade($force);
+        $acl_manager = new AclManager($manager);
+        $acl_manager->upgrade($this, $force);
     }
 
     public function getAssetConfig()

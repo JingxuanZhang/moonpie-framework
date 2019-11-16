@@ -17,10 +17,9 @@ class AclManager
     protected $pluginManager;
     protected $pluginElement;
 
-    public function __construct(PluginManager $pluginManager, PluginElement $pluginElement)
+    public function __construct(PluginManager $pluginManager)
     {
         $this->pluginManager = $pluginManager;
-        $this->pluginElement = $pluginElement;
     }
 
     public function getPluginElement()
@@ -36,8 +35,9 @@ class AclManager
         return $this->pluginManager;
     }
 
-    public function install($force = false)
+    public function install(PluginElement $pluginElement, $force = false)
     {
+        $this->pluginElement = $pluginElement;
         $configs = $this->getSortedConfig();
         //dump($configs); exit;
         AclRole::startTrans();
@@ -105,7 +105,7 @@ class AclManager
                     }
                     //这时候处理父资源信息
                     $parent_code = Arr::get($config, 'data.parent', null);
-                    if(!$parent_code) $pid = null;
+                    if (!$parent_code) $pid = null;
                     else $pid = AclResource::where('code', $config['data']['id'])->value('id');
                     if ($pid > 0) {
                         $result = false !== $record->save(['pid' => $pid]);
@@ -170,8 +170,9 @@ class AclManager
         }
     }
 
-    public function uninstall($force = false)
+    public function uninstall(PluginElement $pluginElement, $force = false)
     {
+        $this->pluginElement = $pluginElement;
         $configs = $this->getSortedConfig();
         //dump($configs); exit;
         AclRole::startTrans();
@@ -193,28 +194,28 @@ class AclManager
                 $drop_resource_ids = AclResource::whereIn('code', $drop_resources)->column('id');
             }
             //最后是角色
-            if(!empty($drop_role_ids)) {
-                $result = false !==AclUserAclGrant::whereIn('role_id', $drop_role_ids)->delete();
-                if(!$result) {
+            if (!empty($drop_role_ids)) {
+                $result = false !== AclUserAclGrant::whereIn('role_id', $drop_role_ids)->delete();
+                if (!$result) {
                     AclRole::rollback();
                     return false;
                 }
             }
-            if(!empty($drop_resource_ids)){
+            if (!empty($drop_resource_ids)) {
                 $result = false !== AclUserAclGrant::whereIn('resource_id', $drop_resource_ids)->delete();
-                if(!$result) {
+                if (!$result) {
                     AclRole::rollback();
                     return false;
                 }
             }
-            if(!empty($drop_resource_ids)) {
+            if (!empty($drop_resource_ids)) {
                 $result = false !== AclResource::whereIn('id', $drop_resource_ids)->delete();
                 if (!$result) {
                     AclRole::rollback();
                     return false;
                 }
             }
-            if(!empty($drop_role_ids)) {
+            if (!empty($drop_role_ids)) {
                 $result = false !== AclRole::whereIn('id', $drop_role_ids)->delete();
                 if (!$result) {
                     AclRole::rollback();
@@ -229,9 +230,9 @@ class AclManager
         }
     }
 
-    public function upgrade($force = false)
+    public function upgrade(PluginElement $pluginElement, $force = false)
     {
-        return $this->install($force);
+        return $this->install($pluginElement, $force);
     }
 
     protected function getSortedConfig()
