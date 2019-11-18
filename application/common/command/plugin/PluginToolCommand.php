@@ -79,7 +79,7 @@ EOT
                 if(!$result) {
                     $this->output->warning(sprintf('插件(code: %s, title: %s)重新安装权限角色信息失败', $code, $plugin->getTitle()));
                 }else {
-                    $this->output->info(sprintf('插件(code: %s, title: %s)重新安装权限角色信息失败', $code, $plugin->getTitle()));
+                    $this->output->info(sprintf('插件(code: %s, title: %s)重新安装权限角色信息成功', $code, $plugin->getTitle()));
                 }
             }
         }
