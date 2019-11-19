@@ -29,7 +29,7 @@ class PluginToolCommand extends Command
             ->setHelp(<<<EOT
 php think mp:plugin-tool menu-clear <comment>菜单缓存清除</comment>
 php think mp:plugin-tool asset-clear <comment>前端资源重置</comment>
-php think mp:plugin-tool acl-reset<comment>权限资源重置</comment>
+php think mp:plugin-tool acl-reset -p some_plugin_code<comment>权限资源重置</comment>
 EOT
 )
             ;
@@ -73,6 +73,7 @@ EOT
          * @var  $code
          * @var  $plugin PluginElement
          */
+        $handled = [];
         foreach($plugins as $code => $plugin) {
             if(in_array($code, $plugin_codes)) {
                 $result = $service->install($plugin, true);
@@ -81,7 +82,12 @@ EOT
                 }else {
                     $this->output->info(sprintf('插件(code: %s, title: %s)重新安装权限角色信息成功', $code, $plugin->getTitle()));
                 }
+                $handled[] = $code;
             }
+        }
+        $not_match = array_diff($plugin_codes, $handled);
+        foreach($not_match as $n) {
+            $this->output->warning(sprintf('插件(机读码:%s)没有被处理', $n));
         }
     }
     protected function handleAssetClear()
