@@ -255,6 +255,7 @@ class PluginManager
             }
         }
         if (empty($module) && $scope == 'config' && !empty($hook_pool)) {
+            //数字越大越靠前,倒序
             usort($hook_pool, function ($a, $b) {
                 $a_weight = Arr::get($a, 'priority', 0);
                 $b_weight = Arr::get($b, 'priority', 0);

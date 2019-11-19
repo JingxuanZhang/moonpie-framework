@@ -30,7 +30,9 @@ class BasicProvider implements ServiceProviderInterface
         $pimple['authorize.acl_res_registry'] = function ($c) {
             $registry = new ResourceRegistry($c);
             $registry->add('\Zend\Permissions\Acl\Resource\GenericResource', '系统通用权限标识', '内置于系统中比较简单的基础资源类', true);
-            $params = compact($registry);
+            $params = [
+                'registry' => $registry,
+            ];
             Hook::listen('acl_init_res_registry', $params);
             return $registry;
         };

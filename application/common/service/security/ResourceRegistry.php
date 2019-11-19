@@ -44,7 +44,7 @@ class ResourceRegistry
             $class = $flag;
             $id = spl_object_hash($flag);
         } else {
-            throw new InvalidAssertionException(sprintf('Resource class flag "%s" has unsupport format "%s"', $flag,
+            throw new InvalidAssertionException(sprintf('Resource class flag "%s" has unsupported format "%s"', $flag,
                 gettype($flag)
             ));
         }
