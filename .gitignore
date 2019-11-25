@@ -5,7 +5,10 @@ node_modules/
 .DS_Store
 .idea
 thinkphp
+local_*.php
 local.php
+prod.php
+prod_*.php
 public/static/bundle
 public/upload/
 vendor

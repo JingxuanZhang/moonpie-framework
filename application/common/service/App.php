@@ -297,7 +297,21 @@ class App extends Base
 
             // 加载应用状态配置
             if ($config['app_status']) {
+                //@todo 这里会有个bug,如果使用tp自带的缓存配置会加载不到
                 Config::load(CONF_PATH . $module . $config['app_status'] . CONF_EXT);
+                //加载其他空间的配置
+                $iterator = new \DirectoryIterator(CONF_PATH . $module);
+                $prefix = $config['app_status'] . '_';
+                foreach($iterator as $dir) {
+                    if($dir->isFile()) {
+                        $basename = $dir->getBasename('.' . $dir->getExtension());
+                        $idx = strpos($basename, $prefix);
+                        if($idx === 0) {
+                            $range_name = substr($basename, strlen($prefix));
+                            Config::load($dir->getRealPath(), null, $range_name);
+                        }
+                    }
+                }
             }
             // 这里需要根据合并策略处理配置
             if(empty($module) && isset($params)) {
