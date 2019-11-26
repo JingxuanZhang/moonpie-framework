@@ -9,6 +9,7 @@ local_*.php
 local.php
 prod.php
 prod_*.php
+application/extra/*.php
 public/static/bundle
 public/upload/
 vendor
