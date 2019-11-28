@@ -39,7 +39,10 @@ abstract class PlainBackendController extends Controller
         // 登录页面
         'login/manager',
     ];
+    //菜单容器名
     protected $menuName = 'admin_panel';
+    //菜单最大层级,注意这里表示的3级菜单,因为系统会将容器也视为一级
+    protected $menuMaxDepth = 4;
     /**
      * 模型对象
      * @var \think\Model
@@ -129,7 +132,7 @@ abstract class PlainBackendController extends Controller
         if (empty($menus)) {
             /** @var \app\common\service\menu\MenuService $service */
             $service = app('menu.manager');
-            $menus = $service->getMenusByName($this->menuName, null, 3);
+            $menus = $service->getMenusByName($this->menuName, null, $this->menuMaxDepth);
             //dump($this->menuName); dump($menus);exit;
         }
         //        dump($menus);die;

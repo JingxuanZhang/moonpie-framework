@@ -137,9 +137,9 @@ class MenuElement
         $class_object = $service->createFromDefinition($callback);
         return [$class_object, 'checkAccess'];
     }
-    private static function parseAclResource($config)
+    public static function parseAclResource($config, $resourceField = 'acl resource')
     {
-        $resource_config = Arr::get($config, 'acl resource', null);
+        $resource_config = Arr::get($config, $resourceField, null);
         if (empty($resource_config)) return null;
         if (is_string($resource_config)) return $resource_config;
         if (is_array($resource_config)) {
