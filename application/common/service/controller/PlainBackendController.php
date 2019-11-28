@@ -360,12 +360,13 @@ abstract class PlainBackendController extends Controller
     {
         return $this->store['admin_user'];
     }
-    protected function accessDeny($permission = null, $resource = null, $message = 'Access Deny')
+    protected function accessDeny($permission = null, $resource = null, $message = 'Access Deny', $throw = true)
     {
         $has_permission = app('current_account')->hasPermission($permission, $resource);
         if (!$has_permission) {
-            throw new HttpException(403, $message);
+            if($throw) throw new HttpException(403, $message);
         }
+        return $has_permission;
     }
     protected function isAllowAllAction(Request $request)
     {
