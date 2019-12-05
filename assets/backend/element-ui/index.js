@@ -20,7 +20,7 @@ import {
   Col,
   Table,
   TableColumn,
-  Pagination, Select, Option, InputNumber, Cascader, Link, DatePicker, Collapse, CollapseItem
+  Pagination, Select, Option, InputNumber, Cascader, Link, DatePicker, Collapse, CollapseItem, ButtonGroup
 } from 'element-ui'
 
 function install(Vue) {
@@ -46,5 +46,6 @@ function install(Vue) {
   Vue.use(DatePicker)
   Vue.use(Collapse)
   Vue.use(CollapseItem)
+  Vue.use(ButtonGroup)
 }
 export default install
