@@ -131,17 +131,47 @@ class AclManager
             foreach ($grants as $grant) {
                 if ($grant['deprecated']) {
                     //@todo 删除的规则如何去做
+                    if (!empty($grant['roleId'])) $role_id = AclRole::where('code', $grant['roleId'])->value('id');
+                    if (!empty($grant['resourceId'])) $resource_id = AclResource::where('code', $grant['resourceId'])->value('id');
+                    $model = new AclUserAclGrant();
+                    if($role_id) $model->where('role_id', $role_id);
+                    else $model->where('role_id', '');
+                    if($resource_id) $model->where('resource_id', $resource_id);
+                    else $model->where('resource_id', '');
+                    $model->where('granted', $grant['allowed']);
+                    $result = false !== $model->delete();
+                    if (!$result) {
+                        AclRole::rollback();
+                        return false;
+                    }
                 } else {
                     $record = new AclUserAclGrant();
                     $role_id = $resource_id = null;
                     if (!empty($grant['roleId'])) $role_id = AclRole::where('code', $grant['roleId'])->value('id');
                     if (!empty($grant['resourceId'])) $resource_id = AclResource::where('code', $grant['resourceId'])->value('id');
+                    if($role_id) $record->where('role_id', $role_id);
+                    else $record->where('role_id', '');
+                    if($resource_id) $record->where('resource_id', $resource_id);
+                    else $record->where('resource_id', '');
+                    $record = $record->where('granted', $grant['allowed'])->find();
+                    if(!$record) $record = new AclUserAclGrant();
                     $result = false !== $record->save([
                             'role_id' => $role_id, 'resource_id' => $resource_id,
                             'title' => $grant['title'], 'assertion' => Arr::get($grant, 'assertion', ''),
                             'privileges' => Arr::get($grant, 'privileges', []),
                             'use_code' => 1, 'granted' => $grant['allowed'],
                         ]);
+                    if (!$result) {
+                        AclRole::rollback();
+                        return false;
+                    }
+                    //删除所有其他重复的记录
+                    $model = new AclUserAclGrant();
+                    if($role_id) $model->where('role_id', $role_id);
+                    else $model->where('role_id', '');
+                    if($resource_id) $record->where('resource_id', $resource_id);
+                    else $model->where('resource_id', '');
+                    $result = false !== $model->where('granted', $grant['allowed'])->where('id', '<>', $record->getId())->delete();
                     if (!$result) {
                         AclRole::rollback();
                         return false;
@@ -227,6 +257,7 @@ class AclManager
         } catch (\Exception $e) {
             AclRole::rollback();
             throw $e;
+            return false;
         }
     }
 
