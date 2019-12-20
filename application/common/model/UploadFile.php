@@ -9,6 +9,7 @@
 
 namespace app\common\model;
 
+use app\common\service\helper\ArrayHelper;
 use EasyWeChat\Kernel\Support\Arr;
 use think\Request;
 use traits\model\SoftDelete;
@@ -169,5 +170,17 @@ class UploadFile extends BaseModel
     public function getId()
     {
         return $this->getData('file_id');
+    }
+    public function getContentHeader($name = null)
+    {
+        $headers = [
+            'Content-Type' => implode('/', [$this->getData('file_type'), $this->getData('extension')])
+        ];
+        if(is_null($name)) return $headers;
+        return ArrayHelper::getValue($headers, $name);
+    }
+    public function getBinaryContent()
+    {
+        return $this->getFilesystem()->read($this->getData('file_name'));
     }
 }
