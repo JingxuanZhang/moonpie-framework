@@ -326,12 +326,19 @@ class App extends Base
             //这里加载配置中的服务
             if (empty($module)) app(true)->registerFromConfig();
 
+
             // 加载当前模块语言包
             if ($module) {
                 Lang::load($path . 'lang' . DS . Request::instance()->langset() . EXT);
             }
         }
 
+        //加载插件服务
+        if (empty($module)) {
+            /** @var \app\common\service\plugin\PluginManager $plugin_manager */
+            $plugin_manager = \app('plugin.manager');
+            $plugin_manager->registerService(\app(true));
+        }
         return Config::get();
     }
 

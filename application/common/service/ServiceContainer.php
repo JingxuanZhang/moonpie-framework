@@ -123,7 +123,7 @@ class ServiceContainer extends Container
             //$valid_plugins = $c['enable_plugins'];
             //$plugin_manager = new PluginManager($root_paths, $valid_plugins, $debug);
             $plugin_manager = new PluginManager($root_paths, $debug);
-            $plugin_manager->registerService($this);
+            //$plugin_manager->registerService($this);
             return $plugin_manager;
         };
         //菜单部分
