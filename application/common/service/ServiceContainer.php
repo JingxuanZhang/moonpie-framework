@@ -27,13 +27,18 @@ use app\common\service\routing\Router;
 use EasyWeChat\Kernel\Support\Collection;
 use Monolog\Logger;
 use Pimple\Container;
+use Pimple\Exception\UnknownIdentifierException;
 use Pimple\ServiceProviderInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\Lock\Factory;
 use Symfony\Component\Lock\Store\FlockStore;
 use Symfony\Component\Lock\Store\SemaphoreStore;
 use think\Config;
+use think\Env;
 
-class ServiceContainer extends Container
+class ServiceContainer extends Container implements ContainerInterface
 {
     /**
      * @var array 存储服务标签的集合
@@ -114,6 +119,7 @@ class ServiceContainer extends Container
         };*/
         $this['app_env'] = [
             'debug' => App::$debug,
+            'env' => Env::get('app_status', 'prod')
         ];
         $this['plugin.manager'] = function ($c) {
             $root_paths = $c['app_src_paths'];
@@ -214,4 +220,18 @@ class ServiceContainer extends Container
 
         return $results;
     }
+
+    public function get($id)
+    {
+        if(!isset($this[$id])) {
+            throw new UnknownIdentifierException($id);
+        }
+        return $this[$id];
+    }
+
+    public function has($id)
+    {
+        return isset($this[$id]);
+    }
+
 }

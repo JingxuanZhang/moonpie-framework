@@ -34,7 +34,13 @@ class Collection extends Base
     }
     public function get($key, $default = null)
     {
-        return ArrayHelper::get($this->items, $key, $default);
+        return ArrayHelper::getValue($this->items, $key, $default);
+    }
+    public function set($key, $value, $nonValue = null)
+    {
+        $old = ArrayHelper::getValue($this->items, $key, $nonValue);
+        ArrayHelper::setValue($this->items, $key, $value);
+        return $old;
     }
     public function first(callable $callback = null, $default = null)
     {
