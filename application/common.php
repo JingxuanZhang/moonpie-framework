@@ -193,19 +193,18 @@ if (!function_exists('app')) {
      */
     function app($id, $ignoreNotFound = false)
     {
-        static $container, $inner;
-        if (!isset($container)) {
+        static $inner;
+        if (!isset($inner)) {
             $inner = new \app\common\service\ServiceContainer();
-            $container = new \Pimple\Psr11\Container($inner);
         }
         if ($id === true) return $inner;
         if (empty($id) || !is_string($id)) {
-            return $container;
+            return $inner;
         }
         if ($ignoreNotFound) {
-            return $container->has($id) ? $container->get($id) : null;
+            return $inner->has($id) ? $container->get($id) : null;
         }
-        return $container->get($id);
+        return $inner->get($id);
     }
 }
 

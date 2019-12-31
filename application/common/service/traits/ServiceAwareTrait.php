@@ -8,18 +8,19 @@
 
 namespace app\common\service\traits;
 
-use Pimple\Container;
+
+use Psr\Container\ContainerInterface;
 
 trait ServiceAwareTrait
 {
     protected $serviceContainer;
-    public function setServiceContainer(Container $container)
+    public function setServiceContainer(ContainerInterface $container)
     {
         $this->serviceContainer = $container;
     }
 
     /**
-     * @return Container
+     * @return ContainerInterface
      */
     public function getServiceContainer()
     {

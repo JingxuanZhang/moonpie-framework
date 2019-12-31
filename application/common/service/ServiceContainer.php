@@ -11,7 +11,11 @@
 namespace app\common\service;
 
 use app\common\model\Setting;
+use app\common\service\base\Collection;
 use app\common\service\base\ConfigResolver;
+use app\common\service\container\BaseServiceContainer;
+use app\common\service\container\RewindableGenerator;
+use app\common\service\container\ServiceProviderInterface;
 use app\common\service\filesystem\control\DefaultControlEngine;
 use app\common\service\filesystem\FilesystemFactory;
 use app\common\service\filesystem\FilesystemManager;
@@ -24,25 +28,36 @@ use app\common\service\plugin\asset\AssetManager;
 use app\common\service\plugin\PluginManager;
 use app\common\service\resolver\ClassResolver;
 use app\common\service\routing\Router;
-use EasyWeChat\Kernel\Support\Collection;
 use Monolog\Logger;
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
 use Symfony\Component\Lock\Factory;
 use Symfony\Component\Lock\Store\FlockStore;
 use Symfony\Component\Lock\Store\SemaphoreStore;
 use think\Config;
 use think\Env;
 
-class ServiceContainer extends Container
+class ServiceContainer extends BaseServiceContainer
 {
     /**
-     * @var array 存储服务标签的集合
+     * Resolve all of the bindings for a given tag.
+     *
+     * @param  string  $tag
+     * @return iterable
      */
-    protected $tags = [];
-    public function __construct(array $values = array())
+    public function tagged($tag)
     {
-        parent::__construct($values);
+        if (! isset($this->tags[$tag])) {
+            return [];
+        }
+
+        return new RewindableGenerator(function () use ($tag) {
+            foreach ($this->tags[$tag] as $abstract => $attributes) {
+                yield $abstract => [$this->make($abstract), $attributes];
+            }
+        }, count($this->tags[$tag]));
+    }
+
+    public function __construct()
+    {
         $this->prepareBase();
     }
 
@@ -72,52 +87,52 @@ class ServiceContainer extends Container
     {
         //首先注册Lock
         //信号存储
-        $this['lock.store.semaphore'] = function () {
+        $this->singleton('lock.store.semaphore'  , function () {
             return new SemaphoreStore();
-        };
+        });
 
-        $this['config'] = function ($c) {
+        $this->singleton('config'  , function ($c) {
             return new Collection(Config::get());
-        };
+        });
         //flock
-        $this['lock.store.flock'] = function () {
-            $dir = RUNTIME_PATH . 'lock' . DS . Config::get('app_status');
+        $this->singleton('lock.store.flock',   function ($c) {
+            $dir = RUNTIME_PATH . 'lock' . DS . $c->get('app_env.env');
             if (!is_dir($dir)) {
                 mkdir($dir, 0755, true);
             }
             return new FlockStore($dir);
-        };
+        });
         //先使用本地的
-        $this['lock.factory'] = function ($c) {
+        $this->singleton('lock.factory'  , function ($c) {
             $factory = new LockFactory();
             $factory->setServiceContainer($c);
             return $factory;
-        };
-        $this['lock.factory.default'] = function ($c) {
+        });
+        $this->singleton('lock.factory.default'  , function ($c) {
             $store = $c['lock.store.flock'];
             $factory = new Factory($store);
             return $factory;
-        };
-        $this['logger'] = function ($c) {
+        });
+        $this->singleton('logger'  , function ($c) {
             $logger = new LogManager($c);
             $logger->extend('db', function ($app, $config) use ($logger) {
                 $handler = new ThinkDbHandler('sys_log', Logger::toMonologLevel($config['level'] ? $config['level'] : 'debug'));
                 return new Logger($config['name'], [$handler]);
             });
             return $logger;
-        };
-        $this['app_src_paths'] = [
+        });
+        $this->instance('app_src_paths',   [
             'app' => APP_PATH,
             'plugin' => ROOT_PATH . 'plugin' . DS,
-        ];
+        ]);
         /*$this['enable_plugins'] = function ($c) {
             return ['manager'];
         };*/
-        $this['app_env'] = [
+        $this->instance('app_env', [
             'debug' => App::$debug,
             'env' => Env::get('app_status', 'prod')
-        ];
-        $this['plugin.manager'] = function ($c) {
+        ]);
+        $this->singleton('plugin.manager',   function ($c) {
             $root_paths = $c['app_src_paths'];
             $debug = $c['app_env']['debug'];
             //$valid_plugins = $c['enable_plugins'];
@@ -125,64 +140,58 @@ class ServiceContainer extends Container
             $plugin_manager = new PluginManager($root_paths, $debug);
             //$plugin_manager->registerService($this);
             return $plugin_manager;
-        };
+        });
         //菜单部分
-        $this['menu.manager'] = function ($c) {
+        $this->singleton('menu.manager'  , function ($c) {
             return new MenuService($c['plugin.manager']);
-        };
+        });
         //资源部分
-        $this['asset.manager'] = function ($c) {
+        $this->singleton('asset.manager'  , function ($c) {
             return new AssetManager($c['plugin.manager']);
-        };
+        });
         //类解决器
-        $this['class.resolver'] = function ($c) {
+        $this->singleton('class.resolver'  , function ($c) {
             return new ClassResolver($c);
-        };
+        });
         //新增存储相关
-        $this['storage.factory'] = function ($c) {
+        $this->singleton('storage.factory'  , function ($c) {
             return new FilesystemFactory();
-        };
-        $this['storage.visit_manager'] = function ($c) {
+        });
+        $this->singleton('storage.visit_manager' , function ($c) {
             return new VisitManager;
-        };
-        $this['storage.manager'] = function ($c) {
+        });
+        $this->singleton('storage.manager'  , function ($c) {
             return new FilesystemManager($c['storage.factory'], $c['storage.visit_manager'], Setting::getItem('storage'));
-        };
-        $this['storage.engine_manager'] = function ($c) {
+        });
+        $this->singleton('storage.engine_manager'  , function ($c) {
             //添加默认的引擎管理器
             $return = new DefaultControlEngine();
             $services = $c->tagged('storage.control_handler');
-            foreach($services as $service_id => $attributes) {
-                $tag_service = $c[$service_id];
+            foreach($services as $service_id => $params) {
+                list($tag_service, $attributes) = $params;
                 $return->addEngineHandler($tag_service, isset($attributes['priority']) ? $attributes['priority'] : 0);
             }
             return $return;
-        };
+        });
         //基础配置部分
-        $this['config.resolver'] = function($c){
+        $this->singleton('config.resolver'  , function($c){
             return new ConfigResolver();
-        };
+        });
         //提供路由相关
-        $this['routing.router'] = function($c){
+        $this->singleton('routing.router'  , function($c){
             $router = new Router($c);
             $tag = 'routing.middleware_register';
             $services = $c->tagged($tag);
-            foreach($services as $service_id => $attributes) {
-                $c[$service_id]->registerMiddleware($router);
+            foreach($services as $service_id => $params) {
+                list($service, $attributes) = $params;
+                $service->registerMiddleware($router);
             }
             return $router;
-        };
+        });
     }
     public function createFromDefinition($definition, $arguments = [])
     {
-        if (isset($this[$definition])) return $this[$definition];
-        try {
-            $reflector = new \ReflectionClass($definition);
-            if ($reflector->isAbstract()) return false;
-            return $reflector->newInstanceArgs($arguments);
-        } catch (\ReflectionException $e) {
-            return false;
-        }
+        return $this->make($definition, $arguments);
     }
 
     /**
@@ -199,21 +208,5 @@ class ServiceContainer extends Container
         }
         $this->tags[$tagName][$service] = $tagAttributes;
         return $this;
-    }
-
-    /**
-     * 获取绑定指定标签的服务配置，注意这里并没有实例化具体的对象
-     * @param  string  $tag
-     * @return array
-     */
-    public function tagged($tag)
-    {
-        $results = [];
-
-        if (isset($this->tags[$tag])) {
-            return $this->tags[$tag];
-        }
-
-        return $results;
     }
 }

@@ -12,6 +12,7 @@ namespace app\common\service\pipeline;
 
 use app\common\service\ServiceContainer;
 use Closure;
+use Psr\Container\ContainerInterface;
 
 class BasePipeLine implements PipeLineInterface
 {
@@ -46,10 +47,10 @@ class BasePipeLine implements PipeLineInterface
     /**
      * Create a new class instance.
      *
-     * @param  ServiceContainer|null  $container
+     * @param  ContainerInterface|null  $container
      * @return void
      */
-    public function __construct(ServiceContainer $container = null)
+    public function __construct(ContainerInterface $container = null)
     {
         $this->container = $container;
     }
@@ -142,7 +143,7 @@ class BasePipeLine implements PipeLineInterface
                     // of the dependency injection container. We can then build a callable and
                     // execute the pipe function giving in the parameters that are required.
                     /** @var \app\common\service\resolver\ClassResolverInterface $resolver */
-                    $resolver = $this->getContainer()->offsetGet('class.resolver');
+                    $resolver = $this->getContainer()->get('class.resolver');
                     $pipe = $resolver->createFromDefinition($name);
 
                     $parameters = array_merge([$passable, $stack], $parameters);

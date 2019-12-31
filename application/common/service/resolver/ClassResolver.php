@@ -10,12 +10,13 @@
 namespace app\common\service\resolver;
 
 
-use Pimple\Container;
+
+use Psr\Container\ContainerInterface;
 
 class ClassResolver implements ClassResolverInterface
 {
     protected $container;
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
@@ -34,11 +35,11 @@ class ClassResolver implements ClassResolverInterface
                 }
                 $id = $reflector->getName();
             } catch (\ReflectionException $e) {
-                if (!isset($this->container[$flag])) {
+                if (!$this->container->has($flag)) {
                     throw new \InvalidArgumentException(sprintf('class flag "%s" is not exists in our service container', $flag));
                 }
                 $id = $flag;
-                $class = $this->container[$flag];
+                $class = $this->container->get($flag);
             }
         } else if(is_array($flag)){
             //处理数组部分

@@ -13,6 +13,7 @@ namespace app\common\service\routing;
 use app\common\service\pipeline\BasePipeLine;
 use app\common\service\ServiceContainer;
 use EasyWeChat\Kernel\Support\Arr;
+use Psr\Container\ContainerInterface;
 use think\Config;
 use think\Request;
 use think\Route;
@@ -24,7 +25,7 @@ class Router
     protected $middleware = [];
     protected $middlewareGroups = [];
 
-    public function __construct(ServiceContainer $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }

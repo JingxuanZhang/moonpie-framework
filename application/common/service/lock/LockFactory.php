@@ -26,7 +26,7 @@ class LockFactory implements LockFactoryInterface
     public function get($bin)
     {
         $container = $this->getServiceContainer();
-        $bins = $container['config']->get('lock', []);
+        $bins = $container->get('config')->get('lock', []);
         if (isset($bins[$bin]) && !empty($bins[$bin])) {//优先使用系统配置的管理配置
             $serviceName = $bins[$bin];
         } else if (isset($this->backendBins[$bin]) && !empty($this->backendBins[$bin])) {
@@ -35,7 +35,7 @@ class LockFactory implements LockFactoryInterface
             //默认使用
             $serviceName = 'lock.factory.default';
         }
-        return $this->getServiceContainer()->offsetGet($serviceName);
+        return $this->getServiceContainer()->get($serviceName);
     }
 
 }

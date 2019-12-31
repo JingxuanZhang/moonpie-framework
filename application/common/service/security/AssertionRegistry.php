@@ -9,7 +9,7 @@
 namespace app\common\service\security;
 
 use EasyWeChat\Kernel\Support\Collection;
-use Pimple\Container;
+use Psr\Container\ContainerInterface;
 use Zend\Permissions\Acl\Assertion\AssertionInterface;
 use Zend\Permissions\Acl\Assertion\Exception\InvalidAssertionException;
 use Zend\Permissions\Acl\Exception\InvalidArgumentException;
@@ -22,7 +22,7 @@ class AssertionRegistry
     protected $assertClasses = [];
     protected $container;
 
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
@@ -35,11 +35,11 @@ class AssertionRegistry
                 $class = $reflector->newInstanceWithoutConstructor();
                 $id = $reflector->getName();
             } catch (\ReflectionException $e) {
-                if (!isset($this->container[$flag])) {
+                if (!$this->container->has($flag)) {
                     throw new InvalidAssertionException(sprintf('Assertion class flag "%s" is not exists in our service container', $flag));
                 }
                 $id = $flag;
-                $class = $this->container[$flag];
+                $class = $this->container->get($flag);
             }
         } else if (is_object($flag)) {
             $class = $flag;

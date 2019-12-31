@@ -8,7 +8,7 @@
 
 namespace app\common\service\security;
 
-use Pimple\Container;
+use Psr\Container\ContainerInterface;
 use Zend\Permissions\Acl\Assertion\Exception\InvalidAssertionException;
 use Zend\Permissions\Acl\Exception\InvalidArgumentException;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
@@ -21,7 +21,7 @@ class ResourceRegistry
     protected $resourceClasses = [];
     protected $container;
 
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
@@ -34,11 +34,11 @@ class ResourceRegistry
                 $class = $reflector->newInstanceWithoutConstructor();
                 $id = $reflector->getName();
             } catch (\ReflectionException $e) {
-                if (!isset($this->container[$flag])) {
+                if (!$this->container->has($flag)) {
                     throw new InvalidAssertionException(sprintf('Resource class flag "%s" is not exists in our service container', $flag));
                 }
                 $id = $flag;
-                $class = $this->container[$flag];
+                $class = $this->container->get($flag);
             }
         } else if (is_object($flag)) {
             $class = $flag;
@@ -99,10 +99,10 @@ class ResourceRegistry
                 $class = $reflector->newInstanceArgs($args);
                 return $class;
             } catch (\ReflectionException $e) {
-                if (!isset($this->container[$flag])) {
+                if (!$this->container->has($flag)) {
                     throw new InvalidAssertionException(sprintf('Resource class flag "%s" is not exists in our service container', $flag));
                 }
-                $class = $this->container[$flag];
+                $class = $this->container->get($flag);
                 return $class;
             }
         }

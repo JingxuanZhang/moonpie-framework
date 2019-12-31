@@ -10,24 +10,24 @@
 namespace app\common\service\provider;
 
 
+use app\common\service\container\BaseServiceContainer;
+use app\common\service\container\ServiceProviderInterface;
 use app\common\service\security\AclManager;
 use app\common\service\security\AssertionRegistry;
 use app\common\service\security\ResourceRegistry;
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
 use think\Hook;
 use app\common\service\plugin\acl\AclManager as PluginAclManager;
 
 class BasicProvider implements ServiceProviderInterface
 {
 
-    public function register(Container $pimple)
+    public function register(BaseServiceContainer $container)
     {
         //提供ACL授权类
-        $pimple['authorize'] = function ($c) {
+        $container->singleton('authorize', function ($c) {
             return new AclManager($c['logger']);
-        };
-        $pimple['authorize.acl_res_registry'] = function ($c) {
+        });
+        $container->singleton('authorize.acl_res_registry', function ($c) {
             $registry = new ResourceRegistry($c);
             $registry->add('\Zend\Permissions\Acl\Resource\GenericResource', '系统通用权限标识', '内置于系统中比较简单的基础资源类', true);
             $params = [
@@ -35,15 +35,15 @@ class BasicProvider implements ServiceProviderInterface
             ];
             Hook::listen('acl_init_res_registry', $params);
             return $registry;
-        };
-        $pimple['authorize.acl_assert_registry'] = function ($c) {
+        });
+        $container->singleton('authorize.acl_assert_registry', function ($c) {
             $registry = new AssertionRegistry($c);
             $params = compact($registry);
             Hook::listen('acl_init_assertion_registry', $params);
             return $registry;
-        };
-        $pimple['plugin.acl_manager'] = function($c){
+        });
+        $container->singleton('plugin.acl_manager' , function($c){
             return new PluginAclManager($c['plugin.manager']);
-        };
+        });
     }
 }
