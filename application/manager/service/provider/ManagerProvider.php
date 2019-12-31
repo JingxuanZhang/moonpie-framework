@@ -10,20 +10,20 @@
 namespace app\manager\service\provider;
 
 
+use app\common\service\container\BaseServiceContainer;
+use app\common\service\container\ServiceProviderInterface;
 use app\manager\service\filesystem\control\LocalHandler;
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
 
 class ManagerProvider implements ServiceProviderInterface
 {
-    public function register(Container $pimple)
+    public function register(BaseServiceContainer $container)
     {
         /** @var \app\common\service\ServiceContainer $pimple */
         /** @var \app\common\service\ServiceContainer $c*/
         //添加相关服务
-        $pimple['manager.filesystem_local_control_handler'] = function($c){
+        $container->singleton('manager.filesystem_local_control_handler' , function($c){
             return new LocalHandler();
-        };
-        $pimple->tag('manager.filesystem_local_control_handler', 'storage.control_handler', ['priority' => 10]);
+        });
+        $container->tag('manager.filesystem_local_control_handler', 'storage.control_handler', ['priority' => 10]);
     }
 }
