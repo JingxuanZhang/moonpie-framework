@@ -229,7 +229,7 @@ if (!function_exists('config_get')) {
         $index = strpos($name, '.');
         if($index > 0) {
             $config = (array)\think\Config::get(substr($name, 0, $index), $range);
-            return \EasyWeChat\Kernel\Support\Arr::get($config, substr($name, $index+1), $default);
+            return \app\common\service\helper\ArrayHelper::getValue($config, substr($name, $index+1), $default);
         }
         $config = \think\Config::get($name, $range);
         return is_null($config) ? $default : $config;

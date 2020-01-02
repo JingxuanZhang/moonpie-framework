@@ -24,6 +24,7 @@
         "moonpie/macro": "dev-master",
         "symfony/lock": "~3.4",
         "league/flysystem": "~1.0",
+        "psr/container": "^1.0.0",
         "wikimedia/composer-merge-plugin": "dev-master",
         "zendframework/zend-permissions-acl": "^2.7",
         "drupal/core-graph": "^8.7"

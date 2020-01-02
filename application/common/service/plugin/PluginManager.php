@@ -13,6 +13,7 @@ namespace app\common\service\plugin;
 
 use app\common\service\App;
 use app\common\service\Console;
+use app\common\service\helper\ArrayHelper;
 use app\common\service\ServiceContainer;
 use Drupal\Component\Graph\Graph;
 use EasyWeChat\Kernel\Support\Arr;
@@ -188,22 +189,23 @@ class PluginManager
                     $configs = $plugin_element->getElement('configs', []);
                     //首先加入配置
                     foreach ($configs as $config) {
-                        if (Arr::has($config, 'file')) {
-                            $file_path = Arr::get($config, 'file');
+                        if (ArrayHelper::has($config, 'file')) {
+                            $file_path = ArrayHelper::getValue($config, 'file');
                             $real_path = $plugin_element->getRootPath() . $file_path;
                             if (file_exists($real_path)) {
-                                $range_name = Arr::get($config, 'range', 'plugin');
+                                $range_name = ArrayHelper::getValue($config, 'range', 'plugin');
                                 $range_name = $range_name == 'default' ? '' : $range_name;
-                                $config_name = Arr::get($config, 'name', '');
+                                $config_name = ArrayHelper::getValue($config, 'name', '');
                                 if (empty($config_name)) {//如果没有填写，默认是插件自己的配置
                                     $config_name = $plugin_element->getCode();
                                 } else if ($config_name == 'global') {
                                     $config_name = null;//如果是全局配置，那么设为null
                                     $range_name = '';
                                 } else if ($range_name == 'plugin') {
-                                    $config_name = "{$plugin_element->getCode()}.{$config_name}";
+                                    //如果声名了插件配置，但配置名为空
+                                    if(empty($config_name)) $config_name = "{$plugin_element->getCode()}.{$config_name}";
                                 }
-                                $strategy = Arr::get($config, 'strategy', 'override');
+                                $strategy = ArrayHelper::getValue($config, 'strategy', 'override');
                                 if ($strategy == 'override') {
                                     if (stripos($config_name, '.') === false) {
                                         Config::load($real_path, $config_name, $range_name);
