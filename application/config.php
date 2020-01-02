@@ -180,19 +180,19 @@ return [
         'path' => LOG_PATH,
         // 日志记录级别
         'level' => [],
-        'default' => \think\Env::get('default_log_channel', 'prod'),
+        'default' => \think\Env::get('DEFAULT_LOG_CHANNEL', 'prod'),
         'channels' => [
             'local' => [
                 'driver' => 'daily',
                 'name' => 'local development',
-                'path' => RUNTIME_PATH . 'log/local.log',
+                'path' => RUNTIME_PATH . 'log/'. \think\Env::get('app_status', 'prod'). '/local.log',
                 'level' => 'debug',
             ],
             'prod' => [
                 'driver' => 'daily',
                 'days' => 30,
                 'name' => 'Production',
-                'path' => RUNTIME_PATH . 'log/prod.log',
+                'path' => RUNTIME_PATH . 'log/'. \think\Env::get('app_status', 'prod'). '/prod.log',
                 'level' => 'error',
             ],
         ],

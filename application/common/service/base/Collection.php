@@ -46,4 +46,8 @@ class Collection extends Base
     {
         return ArrayHelper::first($this->items, $callback, $default);
     }
+    public function offsetGet($offset)
+    {
+        return ArrayHelper::getValue($this->items, $offset);
+    }
 }
