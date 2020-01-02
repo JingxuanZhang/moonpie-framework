@@ -202,8 +202,10 @@ class PluginManager
                                     $config_name = null;//如果是全局配置，那么设为null
                                     $range_name = '';
                                 } else if ($range_name == 'plugin') {
-                                    //如果声名了插件配置，但配置名为空
-                                    if(empty($config_name)) $config_name = "{$plugin_element->getCode()}.{$config_name}";
+                                    if(strpos($config_name, '.') === 0) {
+                                        //如果需要声明插件内配置，需要在前面添加"."
+                                        $config_name = "{$plugin_element->getCode()}{$config_name}";
+                                    }
                                 }
                                 $strategy = ArrayHelper::getValue($config, 'strategy', 'override');
                                 if ($strategy == 'override') {
