@@ -96,7 +96,8 @@ class ServiceContainer extends BaseServiceContainer
         });
         //flock
         $this->singleton('lock.store.flock',   function ($c) {
-            $dir = RUNTIME_PATH . 'lock' . DS . $c->get('app_env.env');
+            $env = $c->get('app_env');
+            $dir = RUNTIME_PATH . 'lock' . DS . $env['env'];
             if (!is_dir($dir)) {
                 mkdir($dir, 0755, true);
             }
